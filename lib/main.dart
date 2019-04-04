@@ -23,9 +23,10 @@ class ProductsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        title: 'Productos',
-        context: context,
+      appBar: AppBar(
+        title: Text('Productos'),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

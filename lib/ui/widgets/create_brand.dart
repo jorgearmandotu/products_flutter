@@ -26,6 +26,8 @@ class BrandForm extends StatefulWidget {
 class MyBrandFormState extends State<BrandForm> {
   final _formKey = GlobalKey<FormState>();
   final brandName = TextEditingController();
+  
+  DbHelper _dataBase = new DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +51,11 @@ class MyBrandFormState extends State<BrandForm> {
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
-                  DbHelper db = DbHelper();
-                  db.setBrand(brandName.text);
+                  print('aqui se llamaria a set brands');
+                  print(_dataBase.toString());
+                  print('eso fue data');
+                  _dataBase.setBrand('nuevaBrand');
+                  //_dataBase.setBrand(brandName.text);
                   Navigator.pushNamed(context, '/');
                 }
               },
