@@ -3,76 +3,127 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import '../models/brand_model.dart';
 
- class DbHelper {
+abstract class TableElement{
+  int id;
+  final String tableName;
+  TableElement(this.id, this.tableName);
+  void createTable(Database db);
+  Map<String, dynamic> toMap();
+}
 
-  int iddatos;
+class Tables extends TableElement{
+  static final String TABLE_NAME = "brands";
+  String brand;
+
+  Tables({this.brand, id}): super(id, TABLE_NAME);
+
+  factory Tables.fromMap(Map<String, dynamic> map) {
+    return Tables(brand: map['brand'], id: map['_id']);
+  }
+
+  @override
+  void createTable(Database db) {
+    db.rawUpdate("CREATE TABLE $TABLE_NAME (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand VARCHAR(100))");
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{'brand': this.brand};
+    if(this.id != null){
+      map['_id'] = id;
+    }
+    return map;
+  }
+}
+
+final String DB_FILE_NAME = "crub.db";
+
+class DbHelper {
   static final DbHelper _instance = new DbHelper._internal();
-  DbHelper._internal();
   factory DbHelper() => _instance;
-  
-  Database _database;//static?
+  DbHelper._internal();
+
+  Database _database;
 
   Future<Database> get db async {
     if (_database != null) {
       return _database;
     }
-    _database = await _initDB();
+    _database = await open();
+
     return _database;
   }
 
-  Future<Database> _initDB() async {
-    try {
-      String databasesPath = await getDatabasesPath();
-      String path = join(databasesPath, 'products.db');
-      var db = await openDatabase(
-        path,
-        version: 1,
-        onCreate: (Database database, int version){
-          _createTables(database, version);
-        },
-      );
-      print('[DbHelper] initDB: succes');
-      return db;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
-  }
-
-  void _createTables(Database db, int version) async {
-    await db.rawUpdate(
-        'CREATE TABLE brands (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand TEXT NOT NULL);');
-    print('[DbHelper]_createTables Success');
-  }
-
-  void setBrand(String brand) async {
-    print('esto es set brand');
+  Future<Database> open() async {
     try{
-      Database data = await db;
-      data.transaction((trans) async {
-      return await trans.rawInsert(
-        'INSERT INTO brands (brand) VALUES (\'$brand\')',
-      );
-    });
+      String databasesPath = await getDatabasesPath();
+      String path = "$databasesPath/$DB_FILE_NAME";
+
+      var db = await openDatabase(path,
+      version: 1,
+      onCreate: (Database database, int version) {
+        new Tables().createTable(database);
+      });
+      return db;
     }catch(e){
       print(e.toString());
     }
-    //var dbproducts = await db;
-    
+    return null;
   }
 
-  Future<List<Brand>> getBrand() async {
-    Database dbproducts = await db;
-    List<Brand> listBrand = List();
-    List<Map> queryList = await dbproducts.query('brands', columns: ['brand']);
-    print('[DbHelper] getBrands: ${queryList.length} brands');
-    if (queryList != null && queryList.length > 0) {
-      listBrand = queryList.cast<Brand>().toList();
-      print('[DbHelper] getBrand: ${listBrand[0].brand}');
-      return listBrand;
-    } else {
-      print('[DbHelper] getBrands: Brand is null');
-      return null;
+  Future<List<Tables>> getList() async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query(Tables.TABLE_NAME,
+    columns: ['_id', 'brand']);
+
+    return maps.map((i)=>Tables.fromMap(i)).toList();
+  }
+  Future<TableElement> insert(TableElement element) async {
+    var dbProducts = await db;
+
+    element.id = await dbProducts.insert(element.tableName, element.toMap());
+    print('new ID ${element.id}');
+    return element;
+  }
+
+  /*Future<Categories> setCategory(String category) async {
+    var dbProducts = await db;
+
+    db.
+  }*/
+
+  Future<int> delete(TableElement element) async {
+    var dbProducts = await db;
+    return await dbProducts.delete(element.tableName, where: '_id = ?', whereArgs: [element.id]);
+  }
+  Future<int> update(TableElement element) async {
+    var dbProducts = await db;
+
+    return await dbProducts.update(element.tableName, element.toMap(), where: '_id = ?', whereArgs: [element.id]);
+  }
+}
+
+class Brand extends TableElement{
+  static final String TABLE_NAME = "brands";
+  String brand;
+
+  Brand({this.brand, id}): super(id, TABLE_NAME);
+  factory Brand.fromMap(Map<String, dynamic> map) {
+    return Brand(brand: map['brand'], id: map['_id']);
+  }
+
+  @override
+  void createTable(Database db) {
+    db.rawUpdate("CREATE TABLE $TABLE_NAME (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand VARCHAR(100))");
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{'brand': this.brand};
+    if(this.id != null){
+      map['_id'] = id;
     }
+    return map;
   }
 }

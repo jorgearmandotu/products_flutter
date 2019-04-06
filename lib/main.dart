@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import './ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
+import './models/brand_model.dart';
+import './data/data_helper.dart';
 
 void main() => runApp(ProductsApp());
 
@@ -9,6 +11,9 @@ class ProductsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gestion de Productos',
+      theme: ThemeData(
+        primaryColor: Colors.blueAccent,
+      ),
       initialRoute: '/',
       routes: {
         '/': (context) => ProductsView(),
@@ -48,7 +53,7 @@ class ProductsView extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: _listProduct(),
+            child: ListProducts(),
           ),
         ],
       ),
@@ -104,6 +109,56 @@ class ProductsView extends StatelessWidget {
           color: Colors.blue[500],
         ),
       );
+}
+
+class ListProducts extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return ListProductsState();
+  }
+}
+
+class ListProductsState extends State<ListProducts>{
+  List<Tables> _list;
+  DbHelper _dbHelper;
+
+  @override
+  Widget build(BuildContext context) {
+   return _getList();
+  }
+
+  Widget _getList() {
+    if(_list == null) {
+      return Container(
+        height: 10.0,
+        width: 10.0,
+        child: CircularProgressIndicator(),
+      );
+    }else if(_list.length == 0) {
+      return Text ('No hay datos');
+    }else{
+      return ListView.builder(
+        itemCount: _list.length,
+        itemBuilder: (BuildContext context, index) {
+          Tables brand = _list[index];
+          return Text(brand.brand);
+        },
+      );
+    }
+  }
+  @override
+  void initState() {
+    super.initState();
+    _dbHelper = new DbHelper();
+    updateList();
+  }
+  void updateList() {
+    _dbHelper.getList().then((resultList) {
+      setState(() {
+        _list = resultList;
+      });
+    });
+  }
 }
 
 class MenuView extends StatelessWidget {

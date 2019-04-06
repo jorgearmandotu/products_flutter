@@ -48,15 +48,17 @@ class MyBrandFormState extends State<BrandForm> {
             padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
               onPressed: (){
+                Tables brand = new Tables();
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
-                  print('aqui se llamaria a set brands');
-                  print(_dataBase.toString());
-                  print('eso fue data');
-                  _dataBase.setBrand('nuevaBrand');
+                  //_dataBase.setBrand('nuevaBrand');
                   //_dataBase.setBrand(brandName.text);
+                  brand.brand = brandName.text;
                   Navigator.pushNamed(context, '/');
+                  _dataBase.insert(brand).then((value) {
+                    //ListProductsState.updateList();
+                  });
                 }
               },
               child: Text('Añadir'),
