@@ -3,30 +3,30 @@ import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/brand_model.dart';
 
-class CreateBrand extends StatelessWidget {
+class CreateCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Add Marca',
+        title: 'Add Categoria',
         context: context,
       ),
-      body: BrandForm(),
+      body: CategoryForm(),
     );
   }
 }
 
-class BrandForm extends StatefulWidget {
+class CategoryForm extends StatefulWidget {
   @override
-  MyBrandFormState createState() {
-    return MyBrandFormState();
+  MyCategoryFormState createState() {
+    return MyCategoryFormState();
   }
 }
 
-class MyBrandFormState extends State<BrandForm> {
+class MyCategoryFormState extends State<CategoryForm> {
   final _formKey = GlobalKey<FormState>();
-  final brandName = TextEditingController();
+  final categoryName = TextEditingController();
   
   DbHelper _dataBase = new DbHelper();
 
@@ -38,7 +38,7 @@ class MyBrandFormState extends State<BrandForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
-            controller: brandName,
+            controller: categoryName,
             validator: (value){
               if(value.isEmpty){
                 return 'Debe ingresar un nombre de marca valido';
@@ -49,14 +49,14 @@ class MyBrandFormState extends State<BrandForm> {
             padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
               onPressed: (){
-                Brands brand = new Brands();
+                Categories category = new Categories();
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
-                  brand.brand = brandName.text;
-                  _dataBase.insert(brand).then((value) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                  category.category = categoryName.text;
+                  Navigator.pop(context);
+                  //Navigator.pop(context);
+                  _dataBase.insert(category).then((value) {
                   });
                 }
               },

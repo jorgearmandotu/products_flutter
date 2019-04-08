@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
+import './ui/widgets/create_category.dart';
 import './models/brand_model.dart';
 import './data/data_helper.dart';
 
@@ -19,6 +20,7 @@ class ProductsApp extends StatelessWidget {
         '/': (context) => ProductsView(),
         '/menu': (context) => MenuView(),
         '/createBrand': (context) => CreateBrand(),
+        '/createCategory': (context) => CreateCategory(),
       },
     );
   }
@@ -119,7 +121,8 @@ class ListProducts extends StatefulWidget{
 }
 
 class ListProductsState extends State<ListProducts>{
-  List<Tables> _list;
+  List<Brands> _list;
+  List<Categories> _listCategories;
   DbHelper _dbHelper;
 
   @override
@@ -140,7 +143,7 @@ class ListProductsState extends State<ListProducts>{
       return ListView.builder(
         itemCount: _list.length,
         itemBuilder: (BuildContext context, index) {
-          Tables brand = _list[index];
+          Brands brand = _list[index];
           return Text(brand.brand);
         },
       );
@@ -153,9 +156,18 @@ class ListProductsState extends State<ListProducts>{
     updateList();
   }
   void updateList() {
+    //_dbHelper.getList().then((resultList) {
     _dbHelper.getList().then((resultList) {
       setState(() {
         _list = resultList;
+      });
+    });
+    _dbHelper.getListCategories().then((result) {
+      setState(() {
+        _listCategories = result;
+        if(_listCategories.length>0){
+          print(_listCategories[0].category);
+        }
       });
     });
   }
@@ -191,7 +203,9 @@ class MenuView extends StatelessWidget {
                 child: Text('Add categoria'),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/createCategory');
+                },
               ),
               RaisedButton(
                 child: Text('Add marca'),
