@@ -38,6 +38,9 @@ class MyBrandFormState extends State<BrandForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Marca:'
+            ),
             controller: brandName,
             validator: (value){
               if(value.isEmpty){
@@ -55,8 +58,7 @@ class MyBrandFormState extends State<BrandForm> {
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   brand.brand = brandName.text;
                   _dataBase.insert(brand).then((value) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
                   });
                 }
               },

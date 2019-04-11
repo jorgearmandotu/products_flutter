@@ -39,6 +39,9 @@ class MyCategoryFormState extends State<CategoryForm> {
         children: <Widget>[
           TextFormField(
             controller: categoryName,
+            decoration: InputDecoration(
+              labelText: 'Categoria:',
+            ),
             validator: (value){
               if(value.isEmpty){
                 return 'Debe ingresar un nombre de marca valido';
@@ -54,7 +57,7 @@ class MyCategoryFormState extends State<CategoryForm> {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   category.category = categoryName.text;
-                  Navigator.pop(context);
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                   //Navigator.pop(context);
                   _dataBase.insert(category).then((value) {
                   });

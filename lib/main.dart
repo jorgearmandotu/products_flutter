@@ -4,6 +4,8 @@ import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
 import './models/brand_model.dart';
 import './data/data_helper.dart';
+import './ui/widgets/creates.dart';
+import './ui/widgets/create_products.dart';
 
 void main() => runApp(ProductsApp());
 
@@ -21,6 +23,8 @@ class ProductsApp extends StatelessWidget {
         '/menu': (context) => MenuView(),
         '/createBrand': (context) => CreateBrand(),
         '/createCategory': (context) => CreateCategory(),
+        '/createProvider': (context) => Creates(),
+        '/createProduct' : (context) => CreateProducts(),
       },
     );
   }
@@ -55,7 +59,9 @@ class ProductsView extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: ListProducts(),
+            child: Container(
+              child: ListProducts(),
+            ),
           ),
         ],
       ),
@@ -197,7 +203,9 @@ class MenuView extends StatelessWidget {
                 child: Text('Add producto'),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/createProduct');
+                },
               ),
               RaisedButton(
                 child: Text('Add categoria'),
@@ -226,7 +234,9 @@ class MenuView extends StatelessWidget {
                 child: Text('Add proveedor'),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/createProvider');
+                },
               ),
             ],
           ),
