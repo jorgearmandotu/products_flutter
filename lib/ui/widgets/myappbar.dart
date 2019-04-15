@@ -8,8 +8,10 @@ class MyAppBar extends AppBar {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.menu),
-          onPressed: () {},
+          onPressed: () {
+          },
         ),
       ],
   );
+
 }

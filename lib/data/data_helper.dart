@@ -40,7 +40,7 @@ class Tables {
   }*/
 }
 
-final String DB_FILE_NAME = "products.db";
+final String dBFILENAME = "products.db";
 
 class DbHelper {
   static final DbHelper _instance = new DbHelper._internal();
@@ -62,7 +62,7 @@ class DbHelper {
     try{
       String databasesPath = await getDatabasesPath();
       //String path = "$databasesPath/$DB_FILE_NAME";
-      String path = join(databasesPath, 'products.db');
+      String path = join(databasesPath, dBFILENAME);
 
       var db = await openDatabase(path,
       version: 1,
@@ -76,7 +76,7 @@ class DbHelper {
     return null;
   }
 
-  Future<List<Brands>> getList() async {
+  Future<List<Brands>> getListBrands() async {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('brands',
@@ -94,7 +94,35 @@ class DbHelper {
     return maps.map((i)=>Categories.fromMap(i)).toList();
   }
 
+  Future<List<Products>> getListProducts() async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('products',
+    columns: ['_id', 'product', 'unit', 'category']);
+
+    return maps.map((i)=>Products.fromMap(i)).toList();
+  }
+
+  Future<List<Presentations>> getListPresentations() async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('presentations',
+    columns: ['_id', 'presentation']);
+
+    return maps.map((i)=>Presentations.fromMap(i)).toList();
+  }
+
+  Future<List<Providers>> getListProviders() async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('providers',
+    columns: ['_id', 'provider', 'address', 'phone']);
+
+    return maps.map((i)=>Providers.fromMap(i)).toList();
+  }
+
   Future<TableElement> insert(TableElement element) async {
+    print('inserrcion de data');
     var dbProducts = await db;
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());

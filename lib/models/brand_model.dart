@@ -21,10 +21,10 @@ class Brands extends TableElement {
 }
 
 class Categories extends TableElement{
-  static final String TABLE_NAME = "categories";
+  static final String tABLENAME = "categories";
   String category;
 
-  Categories({this.category, id}): super(id, TABLE_NAME);
+  Categories({this.category, id}): super(id, tABLENAME);
 
   factory Categories.fromMap(Map<String, dynamic> map) {
     return Categories(category: map['category'], id: map['_id']);

@@ -6,6 +6,7 @@ import './models/brand_model.dart';
 import './data/data_helper.dart';
 import './ui/widgets/creates.dart';
 import './ui/widgets/create_products.dart';
+import './ui/widgets/create_prices.dart';
 
 void main() => runApp(ProductsApp());
 
@@ -25,6 +26,7 @@ class ProductsApp extends StatelessWidget {
         '/createCategory': (context) => CreateCategory(),
         '/createProvider': (context) => Creates(),
         '/createProduct' : (context) => CreateProducts(),
+        '/createPrices' : (context) => CreatePrices(),
       },
     );
   }
@@ -163,7 +165,7 @@ class ListProductsState extends State<ListProducts>{
   }
   void updateList() {
     //_dbHelper.getList().then((resultList) {
-    _dbHelper.getList().then((resultList) {
+    _dbHelper.getListBrands().then((resultList) {
       setState(() {
         _list = resultList;
       });
@@ -197,7 +199,9 @@ class MenuView extends StatelessWidget {
                 child: Text('Add precios'),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/createPrices');
+                },
               ),
               RaisedButton(
                 child: Text('Add producto'),

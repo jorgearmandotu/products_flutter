@@ -23,32 +23,14 @@ class ProductsForm extends StatefulWidget {
   }
 }
 
+Categories _category;
+
 class ProductsFormState extends State<ProductsForm> {
   final _formKey = GlobalKey<FormState>();
   final productName = TextEditingController();
   final productUnit = TextEditingController();
-  final productCategory = TextEditingController();
-  DbHelper _database;
-  Categories dropdownValue;
-
-  List<Categories> listCategories;
-  //listCategories = _dataBase.getListCategories();
-
-  @override
-  void initState() {
-    super.initState();
-    _database = new DbHelper();
-    updateList();
-  }
-
-  void updateList() {
-    _database.getListCategories().then((list) {
-      setState(() {
-        listCategories = list;
-        //dropdownValue = listCategories[0];
-      });
-    });
-  }
+  //final productCategory = TextEditingController();
+  DbHelper _dataBase;
 
   @override
   Widget build(BuildContext context) {
@@ -83,39 +65,35 @@ class ProductsFormState extends State<ProductsForm> {
             children: <Widget>[
               Text('Categoria:   '),
               Expanded(
-                child: DropdownButton<Categories>(
-                  value: dropdownValue,
-                  onChanged: (Categories newValue) {
-                    setState(() {
-                      dropdownValue = newValue;
-                    });
-                  },
-                  items: listCategories
-                      .map<DropdownMenuItem<Categories>>((Categories value) {
-                    return DropdownMenuItem<Categories>(
-                        child: Text(value.category), value: value);
-                  }).toList(),
-                ),
-              )
+                child: DropDownCategories(),
+              ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
-              onPressed: (){
-                Products product = new Products();
-                if(_formKey.currentState.validate()) {
-                  Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text('procesando'),));
-                  product.product = productName.text;
-                  product.unit = productUnit.text;
-                  product.category = dropdownValue.id;
-                  Navigator.pop(context);
-                  //Navigator.pop(context);
-                  _database.insert(product).then((value) {
-                    //actuaizar lista
-                    //dropdownValue = null;
-                  });
+              onPressed: () {
+                _dataBase = new DbHelper();
+                if (_formKey.currentState.validate()) { 
+                  if(_category != null){
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('procesando'),
+                    ));
+                    print(_category);
+                     Products productInsert = new Products();
+                    productInsert.product = productName.text;
+                    productInsert.unit = productUnit.text;
+                    productInsert.category = _category.id;
+                    _category = null;
+                    _dataBase.insert(productInsert).then((value) {
+                    Navigator.of(context).pop();
+                    });
+                  }else{
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Seleccione categoria'),
+                    ));
+                  }
                 }
               },
               child: Text('Añadir'),
@@ -124,5 +102,57 @@ class ProductsFormState extends State<ProductsForm> {
         ],
       ),
     );
+  }
+}
+
+class DropDownCategories extends StatefulWidget {
+  DropDownCategories({Key key}) : super(key: key);
+
+  @override
+  _DropdownState createState() => _DropdownState();
+}
+
+class _DropdownState extends State<DropDownCategories> {
+  List<Categories> listCategories;
+  Categories dropdownValue;
+  DbHelper _dataBase;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataBase = new DbHelper();
+    updateList();
+  }
+
+  void updateList() {
+    _dataBase.getListCategories().then((list) {
+      setState(() {
+        listCategories = list;
+      });
+    });
+  }
+
+  Widget build(BuildContext context) {
+    if (listCategories != null) {
+      return DropdownButton<Categories>(
+        value: dropdownValue,
+        hint: Text('Seleccione categoria'),
+        onChanged: (Categories newValue) {
+          setState(() {
+            dropdownValue = newValue;
+            _category = newValue;
+          });
+        },
+        items: listCategories.map<DropdownMenuItem<Categories>>((Categories value) {
+          return DropdownMenuItem<Categories>(
+            value: value,
+            child: Text(value.category),
+          );
+        }).toList(),
+      );
+    }
+    else{
+      return Text('No hay categorias agregadas');
+    }
   }
 }
