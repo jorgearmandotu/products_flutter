@@ -1,10 +1,10 @@
 import '../data/data_helper.dart';
 
 class Brands extends TableElement {
-  static final String TABLE_NAME = 'brands';
+  static final String nameTable = 'brands';
   String brand;
 
-  Brands({this.brand, id}): super(id, TABLE_NAME);
+  Brands({this.brand, id}): super(id, nameTable);
 
   factory Brands.fromMap(Map<String, dynamic> map) {
     return Brands(brand: map['brand'], id: map['_id']);
@@ -21,10 +21,10 @@ class Brands extends TableElement {
 }
 
 class Categories extends TableElement{
-  static final String tABLENAME = "categories";
+  static final String nameTable = "categories";
   String category;
 
-  Categories({this.category, id}): super(id, tABLENAME);
+  Categories({this.category, id}): super(id, nameTable);
 
   factory Categories.fromMap(Map<String, dynamic> map) {
     return Categories(category: map['category'], id: map['_id']);
@@ -42,9 +42,9 @@ class Categories extends TableElement{
 }
 
 class Presentations extends TableElement{
-static final String TABLE_NAME = "presentations";
+static final String nameTable = "presentations";
 String presentation;
-Presentations({this.presentation, id}): super(id, TABLE_NAME);
+Presentations({this.presentation, id}): super(id, nameTable);
 factory Presentations.fromMap(Map<String, dynamic> map) {
   return Presentations(presentation: map['presentation'], id: map['_id']);
 }
@@ -59,12 +59,12 @@ Map<String, dynamic> toMap(){
 }
 
 class Providers extends TableElement{
-static final String TABLE_NAME = "providers";
+static final String nameTable = "providers";
 String provider;
 String address;
 String phone;
 
-Providers({this.provider, this.address, this.phone, id}): super(id, TABLE_NAME);
+Providers({this.provider, this.address, this.phone, id}): super(id, nameTable);
 factory Providers.fromMap(Map<String, dynamic> map) {
   return Providers(provider: map['provider'], address: map['address'], phone: map['phone'], id: map['_id']);
 }
@@ -79,11 +79,11 @@ Map<String, dynamic> toMap(){
 }
 
 class Products extends TableElement{
-static final String TABLE_NAME = "products";
+static final String nameTable = "products";
 String product;
 String unit;
 int category;
-Products({this.product, this.category, this.unit, id}): super(id, TABLE_NAME);
+Products({this.product, this.category, this.unit, id}): super(id, nameTable);
 factory Products.fromMap(Map<String, dynamic> map) {
   return Products(product: map['product'], unit: map['unit'], category: map['category'], id: map['_id']);
 }
@@ -98,14 +98,14 @@ Map<String, dynamic> toMap(){
 }
 
 class Prices extends TableElement{
-static final String TABLE_NAME = "prices";
+static final String nameTable = "prices";
 int product;
 int brand;
 int presentation;
 int provider;
-double priceUnit;
-double promocion;
-Prices({this.product, this.brand, this.presentation, this.provider, this.priceUnit, this.promocion, id}): super(id, TABLE_NAME);
+num priceUnit;
+num promocion;
+Prices({this.product, this.brand, this.presentation, this.provider, this.priceUnit, this.promocion, id}): super(id, nameTable);
 factory Prices.fromMap(Map<String, dynamic> map) {
   return Prices(product: map['product'], brand: map['brand'], presentation: map['presentation'], provider: map['provider'], priceUnit: map['price_unit'], promocion: map['promocion'], id: map['_id']);
 }
@@ -119,73 +119,19 @@ Map<String, dynamic> toMap(){
 }
 }
 
-/*class Categories {
-  String _category;
-  int _id;
-
-  Categories(this._category);
-
-  String get category => _category;
-}
-*/
-/*class Brand extends TableElement{
-  static final String TABLE_NAME = "brands";
-  String brand;
-
-  Brand({this.brand, id}): super(id, TABLE_NAME);
-  factory Brand.fromMap(Map<String, dynamic> map) {
-    return Brand(brand: map['brand'], id: map['_id']);
-  }
-
-  @override
-  void createTable(Database db) {
-    db.rawUpdate("CREATE TABLE $TABLE_NAME (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand VARCHAR(100))");
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{'brand': this.brand};
-    if(this.id != null){
-      map['_id'] = id;
-    }
-    return map;
-  }
-}
-
-class Products extends TableElement{
-  //static String TABLE_NAME = 'products';
+class ProductsDetail {
+  //SELECT products.product, products.unit, price_unit, promocion, providers.provider, brands.brand, presentations.presentation, prices.id, products.id as idProduct
   String product;
   String unit;
-  int category;
-
-  Products({this.product, this.unit, this.category, id, tableName}): super(id, tableName);
-  factory Products.fromMap(Map<String, dynamic> map) {
-    return Products(product: map['product'], unit: map['unit'], id: map['_id'], category: map['category']);
-  }
-
-  @override
-  void createTable(Database db) {
-    db.rawUpdate("CREATE TABLE $TABLE_NAME (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand VARCHAR(100))");
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{'product': this.product};
-    if(this.id != null){
-      map['_id'] = id;
-    }
-    return map;
+  num priceUnit;
+  num promocion;
+  String provider;
+  String brand;
+  String presentation;
+  int idProduct;
+  int idPrices;
+  ProductsDetail({this.product, this.unit, this.priceUnit, this.promocion, this.provider, this.brand, this.presentation, this.idPrices, this.idProduct});
+  factory ProductsDetail.fromMap(Map<String, dynamic> map) {
+    return ProductsDetail(product: map['product'], unit: map['unit'], priceUnit: map['price_unit'], promocion: map['promocion'], provider: map['provider'], brand: map['brand'], presentation: map['presentation'], idProduct: map['idProduct'], idPrices: map['id']);
   }
 }
-class Brand{
-  String _brand;
-  int _id;
-
-  Brand(
-    this._brand,
-    //this._id,
-  );
-  String get brand => _brand;
-  int get id => _id;
-}
-*/

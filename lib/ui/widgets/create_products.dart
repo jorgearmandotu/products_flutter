@@ -4,8 +4,10 @@ import './myappbar.dart';
 import '../../models/brand_model.dart';
 
 class CreateProducts extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: MyAppBar(
         title: 'Productos',
@@ -34,10 +36,11 @@ class ProductsFormState extends State<ProductsForm> {
 
   @override
   Widget build(BuildContext context) {
+    var _sizeWidth = MediaQuery.of(context).size.width;
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: _sizeWidth*0.1),
         children: <Widget>[
           TextFormField(
             controller: productName,

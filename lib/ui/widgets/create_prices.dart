@@ -1,12 +1,15 @@
 //create prices and presentation
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/brand_model.dart';
 
+var _sizeWidth;
 class CreatePrices extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    _sizeWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: MyAppBar(
         title: 'Precios',
@@ -22,8 +25,6 @@ Presentations _presentation;
 Brands _brand;
 Providers _provider;
 
-/********************
-presentation form show dialog*/
 class ProductsForm extends StatefulWidget {
   @override
   ProductsFormState createState() {
@@ -42,38 +43,77 @@ class ProductsFormState extends State<ProductsForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: _sizeWidth*0.1),
         children: <Widget>[
           DropDownProducts(),
           DropDownPresentations(),
           DropDownBrands(),
           DropDownProviders(),
           TextFormField(
+            keyboardType: TextInputType.number,
+            inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
             controller: productVlrUnit,
             decoration: InputDecoration(labelText: 'Valor unitario: '),
             validator: (value) {
               if (value.isEmpty) {
                 return 'Debe ingresar el valor de la unidad';
               }
+              final n = num.tryParse(value);
+              if(n == null) {
+                return '"$value" no es un numero valido';
+              }
             },
           ),
-          TextField(
+          TextFormField(
+            keyboardType: TextInputType.number,
+            inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
+            validator: (value) {
+              final n = num.tryParse(value);
+              if(n == null && value.isNotEmpty) {
+                return '"$value" no es un valor valido';
+              }
+            },
             decoration: InputDecoration(
               labelText: 'valor en oferta: ',
             ),
             controller: productPromocion,
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
+            padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: _sizeWidth*0.2),
             child: RaisedButton(
               color: Colors.blueAccent,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
               child: Text('Agregar'),
               textColor: Colors.white,
+              onPressed: () {
+                if(_formKey.currentState.validate()){
+                  if(_brand != null && _product != null && _presentation != null && _provider != null){
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Procesando')));
+                    Prices price = new Prices();
+                    price.product =_product.id;
+                    price.presentation = _presentation.id;
+                    price.provider = _provider.id;
+                    price.brand = _brand.id;
+                    price.priceUnit =  num.tryParse(productVlrUnit.text);
+                    if(productPromocion.text.isEmpty){
+                      price.promocion = 0;
+                    }else{
+                      price.promocion = num.tryParse(productPromocion.text);
+                    }
+                    _dataBase.insert(price);
+                    _brand = null;
+                    _product = null;
+                    _presentation = null;
+                    _provider = null;
+                    Navigator.of(context).pop();
+                  }
+                  else {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Ingrese todos los datos')));
+                  }
+                }
+              }
             ),
           )
         ],
@@ -200,6 +240,8 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
               );
             }).toList(),
           ),
+          Spacer(
+          ),
           Ink(
             decoration: ShapeDecoration(
               color: Colors.blueAccent,
@@ -223,47 +265,53 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
   void insertPresentations(BuildContext context){
     final presentationValue = TextEditingController();
     final presentationkey = GlobalKey<FormState>();
+    final _heightSize = MediaQuery.of(context).size.height;
 
     Presentations presentation = new Presentations();
     showDialog(
       context: context,
       builder: (BuildContext context){
-        return AlertDialog(
-          title: Text('Nueva presentacion'),
-          content: Form(
-            key: presentationkey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  controller: presentationValue,
-                  decoration: InputDecoration(
-                    labelText: 'Presentation:',
-                  ),
-                  validator: (value){
-                    if(value.isEmpty){
-                      return 'ingrese nombre de presentación';
-                    }
-                  },
+        return 
+            AlertDialog(
+              title: Text('Nueva presentacion'),
+              content: ListView(
+                children: <Widget>[
+                  Form(
+                key: presentationkey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: presentationValue,
+                      decoration: InputDecoration(
+                        labelText: 'Presentation:',
+                      ),
+                      validator: (value){
+                        if(value.isEmpty){
+                          return 'ingrese nombre de presentación';
+                        }
+                      },
+                    ),
+                    RaisedButton(
+                      color: Colors.blueAccent,
+                      onPressed: () {
+                        if(presentationkey.currentState.validate()){
+                          _dataBase = new DbHelper();
+                          presentation.presentation = presentationValue.text;
+                          _dataBase.insert(presentation).then((value){
+                            updateList();
+                          });
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text('Añadir'),
+                    ),
+                  ],
                 ),
-                RaisedButton(
-                  color: Colors.blueAccent,
-                  onPressed: () {
-                    if(presentationkey.currentState.validate()){
-                      _dataBase = new DbHelper();
-                      presentation.presentation = presentationValue.text;
-                      _dataBase.insert(presentation).then((value){
-                        updateList();
-                      });
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Text('Añadir'),
-                ),
-              ],
-            ),
-          ),
-        );
+              ),
+                ],
+              ),
+            );
       }
     );
   }

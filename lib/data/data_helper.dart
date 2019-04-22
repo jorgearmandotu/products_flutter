@@ -80,7 +80,7 @@ class DbHelper {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('brands',
-    columns: ['_id', 'brand']);
+    columns: ['_id', 'brand'], orderBy: 'brand ASC');
 
     return maps.map((i)=>Brands.fromMap(i)).toList();
   }
@@ -89,7 +89,7 @@ class DbHelper {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('categories',
-    columns: ['_id', 'category']);
+    columns: ['_id', 'category'], orderBy: 'category ASC');
 
     return maps.map((i)=>Categories.fromMap(i)).toList();
   }
@@ -98,7 +98,7 @@ class DbHelper {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('products',
-    columns: ['_id', 'product', 'unit', 'category']);
+    columns: ['_id', 'product', 'unit', 'category'], orderBy: 'product ASC');
 
     return maps.map((i)=>Products.fromMap(i)).toList();
   }
@@ -107,7 +107,7 @@ class DbHelper {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('presentations',
-    columns: ['_id', 'presentation']);
+    columns: ['_id', 'presentation'], orderBy: 'presentation ASC');
 
     return maps.map((i)=>Presentations.fromMap(i)).toList();
   }
@@ -116,9 +116,18 @@ class DbHelper {
     Database dbProducts = await db;
 
     List<Map> maps = await dbProducts.query('providers',
-    columns: ['_id', 'provider', 'address', 'phone']);
+    columns: ['_id', 'provider', 'address', 'phone'], orderBy: 'provider ASC');
 
     return maps.map((i)=>Providers.fromMap(i)).toList();
+  }
+
+  Future<List<ProductsDetail>> getListDetails(int id) async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.rawQuery('''SELECT products.product, products.unit, price_unit, promocion, providers.provider, brands.brand, presentations.presentation, prices.id, products.id as idProduct FROM (((products JOIN prices on prices.product = products.id)JOIN providers on providers.id = prices.provider)JOIN brands on brands.id = prices.brand)JOIN presentations on prices.presentation = presentations.id WHERE products.id = $id ORDER BY price_unit ASC''');
+
+    return maps.map((i)=>ProductsDetail.fromMap(i)).toList();
+    //List<Map> maps = await dbProducts.query(table)
   }
 
   Future<TableElement> insert(TableElement element) async {
