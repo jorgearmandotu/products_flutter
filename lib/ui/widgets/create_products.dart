@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../data/data_helper.dart';
 import './myappbar.dart';
-import '../../models/brand_model.dart';
+import '../../models/models.dart';
+import '../../bloc/ListDetailBloc.dart';
 
 class CreateProducts extends StatelessWidget {
 
@@ -33,6 +34,7 @@ class ProductsFormState extends State<ProductsForm> {
   final productUnit = TextEditingController();
   //final productCategory = TextEditingController();
   DbHelper _dataBase;
+  //ListDetailBloc bloc = new ListDetailBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +48,11 @@ class ProductsFormState extends State<ProductsForm> {
             controller: productName,
             decoration: InputDecoration(
               labelText: 'Producto',
+              hintText: 'Nombre Producto',
             ),
             validator: (value) {
               if (value.isEmpty) {
-                return 'ingrese un nombre';
+                return 'Ingrese un nombre';
               }
             },
           ),
@@ -64,14 +67,7 @@ class ProductsFormState extends State<ProductsForm> {
               }
             },
           ),
-          Row(
-            children: <Widget>[
-              Text('Categoria:   '),
-              Expanded(
-                child: DropDownCategories(),
-              ),
-            ],
-          ),
+          DropDownCategories(),
           Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
@@ -83,7 +79,6 @@ class ProductsFormState extends State<ProductsForm> {
                     Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('procesando'),
                     ));
-                    print(_category);
                      Products productInsert = new Products();
                     productInsert.product = productName.text;
                     productInsert.unit = productUnit.text;
@@ -91,6 +86,7 @@ class ProductsFormState extends State<ProductsForm> {
                     _category = null;
                     _dataBase.insert(productInsert).then((value) {
                     Navigator.of(context).pop();
+                    bloc.fetchAllProducts();
                     });
                   }else{
                     Scaffold.of(context).showSnackBar(SnackBar(

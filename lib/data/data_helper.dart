@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
-import '../models/brand_model.dart';
+import '../models/models.dart';
 
 abstract class TableElement{
   int id;
@@ -103,6 +103,15 @@ class DbHelper {
     return maps.map((i)=>Products.fromMap(i)).toList();
   }
 
+  Future<List<Products>> getListProductName(String nameProduct) async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('products',
+    columns: ['_id', 'product', 'unit', 'category'], where: 'product LIKE "%$nameProduct%"', orderBy: 'product ASC');
+
+    return maps.map((i)=>Products.fromMap(i)).toList();
+  }
+
   Future<List<Presentations>> getListPresentations() async {
     Database dbProducts = await db;
 
@@ -124,18 +133,16 @@ class DbHelper {
   Future<List<ProductsDetail>> getListDetails(int id) async {
     Database dbProducts = await db;
 
-    List<Map> maps = await dbProducts.rawQuery('''SELECT products.product, products.unit, price_unit, promocion, providers.provider, brands.brand, presentations.presentation, prices.id, products.id as idProduct FROM (((products JOIN prices on prices.product = products.id)JOIN providers on providers.id = prices.provider)JOIN brands on brands.id = prices.brand)JOIN presentations on prices.presentation = presentations.id WHERE products.id = $id ORDER BY price_unit ASC''');
+    List<Map> maps = await dbProducts.rawQuery('''SELECT products.product, products.unit, price_unit, promocion, providers.provider, brands.brand, presentations.presentation, prices._id, products._id as idProduct FROM (((products JOIN prices on prices.product = products._id)JOIN providers on providers._id = prices.provider)JOIN brands on brands._id = prices.brand)JOIN presentations on prices.presentation = presentations._id WHERE products._id = $id ORDER BY price_unit ASC''');
 
     return maps.map((i)=>ProductsDetail.fromMap(i)).toList();
     //List<Map> maps = await dbProducts.query(table)
   }
 
   Future<TableElement> insert(TableElement element) async {
-    print('inserrcion de data');
     var dbProducts = await db;
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());
-    print('new ID ${element.id}');
     return element;
   }
 
@@ -143,7 +150,6 @@ class DbHelper {
     var dbProducts = await db;
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());
-    print('new ID ${element.id}');
     return element;
   }
 
@@ -151,7 +157,6 @@ class DbHelper {
     var dbProducts = await db;
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());
-    print('new ID ${element.id}');
     return element;
   }
 
@@ -159,15 +164,8 @@ class DbHelper {
     var dbProducts = await db;
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());
-    print('new ID ${element.id}');
     return element;
   }
-
-  /*Future<Categories> setCategory(String category) async {
-    var dbProducts = await db;
-
-    db.
-  }*/
 
   Future<int> delete(TableElement element) async {
     var dbProducts = await db;

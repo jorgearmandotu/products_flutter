@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
-import '../../models/brand_model.dart';
+import '../../models/models.dart';
 
 class CreateBrand extends StatelessWidget {
   @override

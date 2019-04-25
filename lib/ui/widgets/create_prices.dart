@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
-import '../../models/brand_model.dart';
+import '../../models/models.dart';
 
 var _sizeWidth;
 class CreatePrices extends StatelessWidget {
@@ -265,7 +265,6 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
   void insertPresentations(BuildContext context){
     final presentationValue = TextEditingController();
     final presentationkey = GlobalKey<FormState>();
-    final _heightSize = MediaQuery.of(context).size.height;
 
     Presentations presentation = new Presentations();
     showDialog(
