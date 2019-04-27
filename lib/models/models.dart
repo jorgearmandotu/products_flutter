@@ -132,6 +132,6 @@ class ProductsDetail {
   int idPrices;
   ProductsDetail({this.product, this.unit, this.priceUnit, this.promocion, this.provider, this.brand, this.presentation, this.idPrices, this.idProduct});
   factory ProductsDetail.fromMap(Map<String, dynamic> map) {
-    return ProductsDetail(product: map['product'], unit: map['unit'], priceUnit: map['price_unit'], promocion: map['promocion'], provider: map['provider'], brand: map['brand'], presentation: map['presentation'], idProduct: map['idProduct'], idPrices: map['id']);
+    return ProductsDetail(product: map['product'], unit: map['unit'], priceUnit: map['price_unit'], promocion: map['promocion'], provider: map['provider'], brand: map['brand'], presentation: map['presentation'], idProduct: map['idProduct'], idPrices: map['_id']);
   }
 }

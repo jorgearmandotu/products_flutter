@@ -11,15 +11,6 @@ abstract class TableElement{
 }
 
 class Tables {
-  //static final String TABLE_NAME = "brands";
-  //String brand;
-
-  //Tables({this.brand, id}): super(id, TABLE_NAME);
-
-  /*factory Tables.fromMap(Map<String, dynamic> map) {
-    return Tables(brand: map['brand'], id: map['_id']);
-  }*/
-
   void createTable(Database db) {
     //db.rawUpdate("CREATE TABLE $TABLE_NAME (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand VARCHAR(100))");
     db.rawUpdate("CREATE TABLE products (_id INTEGER PRIMARY KEY AUTOINCREMENT, product TEXT NOT NULL, unit TEXT NOT NULL, category INTEGER NOT NULL);");
@@ -29,15 +20,6 @@ class Tables {
     db.rawUpdate("CREATE TABLE providers (_id INTEGER PRIMARY KEY AUTOINCREMENT,provider TEXT NOT NULL,address TEXT NOT NULL,phone TEXT NOT NULL);");
     db.rawUpdate("CREATE TABLE brands (_id INTEGER PRIMARY KEY AUTOINCREMENT, brand TEXT NOT NULL);");
   }
-
-  /*@override
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{'brand': this.brand};
-    if(this.id != null){
-      map['_id'] = id;
-    }
-    return map;
-  }*/
 }
 
 final String dBFILENAME = "products.db";
@@ -130,6 +112,26 @@ class DbHelper {
     return maps.map((i)=>Providers.fromMap(i)).toList();
   }
 
+   Future<List<Prices>> getListPrices() async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('prices',
+    columns: ['_id', 'provider', 'product', 'brand', 'presentation', 'price_unit', 'promocion'], orderBy: 'provider ASC');
+
+    return maps.map((i)=>Prices.fromMap(i)).toList();
+  }
+
+  Future <List<Prices>> getListPricesId(int id) async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('prices',
+    columns: ['_id', 'provider', 'product', 'brand', 'presentation', 'price_unit', 'promocion'], where: '_id = $id',orderBy: 'provider ASC');
+
+    maps[0].toString();
+    return maps.map((i)=>Prices.fromMap(i)).toList();
+    //return maps.map((i) => Prices.)
+  }
+
   Future<List<ProductsDetail>> getListDetails(int id) async {
     Database dbProducts = await db;
 
@@ -145,7 +147,7 @@ class DbHelper {
     element.id = await dbProducts.insert(element.tableName, element.toMap());
     return element;
   }
-
+/*
   Future<TableElement> insertCategory(TableElement element) async {
     var dbProducts = await db;
 
@@ -165,13 +167,19 @@ class DbHelper {
 
     element.id = await dbProducts.insert(element.tableName, element.toMap());
     return element;
-  }
+  }*/
 
   Future<int> delete(TableElement element) async {
     var dbProducts = await db;
     return await dbProducts.delete(element.tableName, where: '_id = ?', whereArgs: [element.id]);
   }
   Future<int> update(TableElement element) async {
+    var dbProducts = await db;
+
+    return await dbProducts.update(element.tableName, element.toMap(), where: '_id = ?', whereArgs: [element.id]);
+  }
+
+  Future<int> updatePrice(TableElement element) async {
     var dbProducts = await db;
 
     return await dbProducts.update(element.tableName, element.toMap(), where: '_id = ?', whereArgs: [element.id]);

@@ -3,6 +3,8 @@ import '../widgets/myappbar.dart';
 import '../../models/models.dart';
 import '../../data/data_helper.dart';
 import '../../helpers/ColorsList.dart';
+import '../widgets/create_prices.dart';
+import 'package:intl/intl.dart';
 
 //Products _productDetail;
 class ProductDetail extends StatelessWidget{
@@ -50,6 +52,7 @@ class DetailProductListState extends State<DetailProductList>{
   Widget build(BuildContext context) {
     CardColor color = new CardColor();
     if(_list != null) {
+      final money = NumberFormat.simpleCurrency();
       return ListView.builder(
         itemCount: _list.length,
         itemBuilder: (BuildContext context, index){
@@ -62,12 +65,14 @@ class DetailProductListState extends State<DetailProductList>{
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('proveedor: ${product.provider}\nprecio: \$${product.priceUnit}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: \$${product.promocion}', style: TextStyle(fontSize: 20.0, color: Colors.white70), textAlign: TextAlign.justify,),
+                Text('proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}', style: TextStyle(fontSize: 20.0, color: Colors.white70), textAlign: TextAlign.justify,),
                 ButtonBar(
                   mainAxisSize: MainAxisSize.min,
                   alignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){},),
+                    IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePrices(idPrice: product.idPrices,)));
+                    },),
                     IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){},),
                   ],
                 )
