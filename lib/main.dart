@@ -3,7 +3,6 @@ import './ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
 import './models/models.dart';
-import './data/data_helper.dart';
 import './ui/widgets/creates.dart';
 import './ui/widgets/create_products.dart';
 import './ui/widgets/create_prices.dart';
@@ -106,7 +105,6 @@ class ListProducts extends StatefulWidget {
 }
 
 class ListProductsState extends State<ListProducts> {
-  DbHelper _dbHelper;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +151,6 @@ class ListProductsState extends State<ListProducts> {
   void initState() {
     super.initState();
     bloc.fetchAllProducts();
-    //updateList();
   }
 
    @override
@@ -161,16 +158,6 @@ class ListProductsState extends State<ListProducts> {
       bloc.dispose();
       super.dispose();
     }
-
-  void updateList() {
-    //_dbHelper.getList().then((resultList) {
-    _dbHelper.getListProducts().then((resultList) {
-      setState(() {
-        //_listProducts = resultList;
-      });
-    });
-   
-  }
 }
 
 class MenuView extends StatelessWidget {

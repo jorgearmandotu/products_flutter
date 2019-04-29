@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/models.dart';
+import '../../bloc/listProductDetailBloc.dart';
 
 var _sizeWidth;
 
@@ -441,7 +442,7 @@ class EditPrices extends StatefulWidget {
 class _EditPricesState extends State<EditPrices> {
   int idPrice;
   _EditPricesState(this.idPrice);
-  //final _keyForm = GlobalKey<FormState>();
+  final _keyForm = GlobalKey<FormState>();
 
   Prices _price;
   ProductsDetail _product;
@@ -480,14 +481,18 @@ class _EditPricesState extends State<EditPrices> {
     if (_price != null && _product != null) {
       TextEditingController priceUnit;
       TextEditingController priceOfert;
+      priceUnit = TextEditingController();
+      priceOfert = TextEditingController();
+      priceUnit.text = _price.priceUnit.toString();
+      priceOfert.text = _price.promocion.toString();
       return Form(
-        //key: _keyForm,
+        key: _keyForm,
         child: Column(
           children: <Widget>[
             Text(
                 'Producto: ${_product.product} \n marca: ${_product.brand} \n Proveedor: ${_product.provider} \nPresentación: ${_product.presentation}'),
             TextFormField(
-              initialValue: _price.priceUnit.toString(),
+              //initialValue: _price.priceUnit.toString(),
               keyboardType: TextInputType.number,
               inputFormatters: [
                 BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
@@ -501,7 +506,7 @@ class _EditPricesState extends State<EditPrices> {
               },
             ),
             TextFormField(
-              initialValue: _price.promocion.toString(),
+              //initialValue: _price.promocion.toString(),
               keyboardType: TextInputType.numberWithOptions(),
               inputFormatters: [
                 BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
@@ -521,26 +526,27 @@ class _EditPricesState extends State<EditPrices> {
                     color: Colors.white,
                   )),
               onPressed: () {
-               // if (_keyForm.currentState.validate()) {
-                  priceUnit = TextEditingController();
-                  priceOfert = TextEditingController();
+                if (_keyForm.currentState.validate()) {
                   num unit = num.tryParse(priceUnit.text);
                   num ofert = num.tryParse(priceOfert.text);
                   if (unit != null && ofert != null) {
                     print('press update');
-                    /*Prices priceUpdate;
+                    Prices priceUpdate;
                   priceUpdate = _price;
                   priceUpdate.priceUnit = unit;
                   priceUpdate.promocion = ofert;
                   DbHelper data = new DbHelper();
-                  data.update(priceUpdate);
-                  Navigator.pop(context);*/
+                  data.update(priceUpdate).then((result){
+                    Navigator.of(context).pop();
+                    blocDetailProduct.fetchAllproductsDetail(priceUpdate.product);
+                  });
+                  return Center(child: CircularProgressIndicator(),);
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text('Error en datos'),
                     ));
                   }
-              //  }
+                }
               },
             ),
           ],

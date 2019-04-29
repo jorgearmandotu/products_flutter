@@ -9,6 +9,7 @@ class ListDetailBloc {
   final _listProducts = PublishSubject<List<Products>>();
 
   Observable<List<Products>> get allProducts => _listProducts.stream;
+  
   List<Products> _productResult;
 
   fetchAllProducts({String nameProduct}) async {
@@ -24,7 +25,6 @@ class ListDetailBloc {
     
   }
 
-
   ListDetailBloc(){
     fetchAllProducts();
   }
@@ -34,14 +34,8 @@ class ListDetailBloc {
     _listProducts.sink.add(_productResult);
   }
 
-  //final _productController = StreamController<Products>();
-
-  //Function(Products) get productAdd => _productController.sink.add;
-
-  //Stream<Products> get product => _productController.stream;
 
   void dispose(){
-    //_productController.close();
     _listProducts.close();
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/myappbar.dart';
 import '../../models/models.dart';
-import '../../data/data_helper.dart';
 import '../../helpers/ColorsList.dart';
 import '../widgets/create_prices.dart';
 import 'package:intl/intl.dart';
+import '../../bloc/listProductDetailBloc.dart';
 
 //Products _productDetail;
 class ProductDetail extends StatelessWidget{
@@ -40,65 +40,70 @@ class DetailProductListState extends State<DetailProductList>{
   final Products _product;
   DetailProductListState(this._product);
 
-  List<ProductsDetail> _list;
-
   @override
   void initState() {
     super.initState();
-    listDetail();
+    blocDetailProduct.open();
+    blocDetailProduct = ListProductsDetailBloc(id: _product.id);
+    //blocDetailProduct.fetchAllproductsDetail(_product.id);
+  }
+
+  @override
+  void dispose() {
+    blocDetailProduct.dispose();
+    super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
-    CardColor color = new CardColor();
-    if(_list != null) {
-      final money = NumberFormat.simpleCurrency();
-      return ListView.builder(
-        itemCount: _list.length,
-        itemBuilder: (BuildContext context, index){
-          ProductsDetail product = _list[index];
-          return  Card( 
-              borderOnForeground: false,
-              margin: EdgeInsets.all(10.0),
-              color: color.getColorList(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text('proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}', style: TextStyle(fontSize: 20.0, color: Colors.white70), textAlign: TextAlign.justify,),
-                ButtonBar(
-                  mainAxisSize: MainAxisSize.min,
-                  alignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePrices(idPrice: product.idPrices,)));
-                    },),
-                    IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){},),
-                  ],
-                )
-              ],
-            ));
+    return _getList();
+  }
+
+  Widget _getList() {
+    return StreamBuilder(
+      stream: blocDetailProduct.detailProducts,
+      builder: (context, AsyncSnapshot<List<ProductsDetail>> snapshot){
+        if(snapshot.hasData){
+          return buildList(snapshot);
         }
-      );
-    }
-    else
-    {
-      return ListView(
-        children: <Widget>[
-          Text(_product.product),
-        ],
-      );
-    }
+        else if(snapshot.hasError){
+          return Text(snapshot.error.toString());
+        }
+        return Center(child: CircularProgressIndicator(),);
+      },
+    );
   }
 
-  void listDetail(){
-    //realizar consulta de datos
-    DbHelper _dataBase = new DbHelper();
-    _dataBase.getListDetails(_product.id).then((result){
-      setState(() {
-       _list = result;
-      });
-    });
+  Widget buildList(AsyncSnapshot<List<ProductsDetail>> snapshot){
+    CardColor color = new CardColor();
+    var money = NumberFormat.simpleCurrency();
+    return ListView.builder(
+      itemCount: snapshot.data.length,
+      itemBuilder: (BuildContext context, index){
+        ProductsDetail product = snapshot.data[index];
+        return Card(
+          borderOnForeground: false,
+          margin: EdgeInsets.all(10.0),
+          color: color.getColorList(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}', style: TextStyle(fontSize: 20.0, color: Colors.white70), textAlign: TextAlign.justify,),
+              ButtonBar(
+                mainAxisSize: MainAxisSize.min,
+                alignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePrices(idPrice: product.idPrices,)));
+                  },),
+                  IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){},),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
-
 }
