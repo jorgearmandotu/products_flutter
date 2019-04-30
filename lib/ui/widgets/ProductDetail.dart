@@ -97,7 +97,9 @@ class DetailProductListState extends State<DetailProductList>{
                   IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePrices(idPrice: product.idPrices,)));
                   },),
-                  IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){},),
+                  IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){
+                    blocDetailProduct.deleteProductDetail(product.idPrices);
+                  },),
                 ],
               )
             ],

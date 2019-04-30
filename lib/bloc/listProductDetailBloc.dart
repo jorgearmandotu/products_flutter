@@ -9,6 +9,7 @@ class ListProductsDetailBloc {
   Observable<List<ProductsDetail>> get detailProducts => _listProductsDetail.stream;
 
   List<ProductsDetail> _listResult;
+
   fetchAllproductsDetail(int id) async {
     _listResult = await _dataDb.getListDetails(id);
     _listProductsDetail.sink.add(_listResult);
@@ -16,6 +17,26 @@ class ListProductsDetailBloc {
 
   ListProductsDetailBloc({int id}){
       fetchAllproductsDetail(id);
+  }
+
+  updateProductsDetail(Prices priceUpdate){
+    _dataDb.update(priceUpdate).then((result){
+      fetchAllproductsDetail(priceUpdate.product);
+    });
+  }
+
+  deleteProductDetail(int idPrice) {
+    Prices priceDelete;
+    _dataDb.getListPricesId(idPrice).then((result){
+      for(Prices p in result) {
+        priceDelete = p;
+      }
+      if(priceDelete != null){
+        _dataDb.delete(priceDelete).then((result){
+          fetchAllproductsDetail(priceDelete.product);
+        });
+      }
+    });
   }
 
   void dispose() {

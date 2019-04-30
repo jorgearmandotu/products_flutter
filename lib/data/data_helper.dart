@@ -147,39 +147,12 @@ class DbHelper {
     element.id = await dbProducts.insert(element.tableName, element.toMap());
     return element;
   }
-/*
-  Future<TableElement> insertCategory(TableElement element) async {
-    var dbProducts = await db;
-
-    element.id = await dbProducts.insert(element.tableName, element.toMap());
-    return element;
-  }
-
-  Future<TableElement> insertPresentations(TableElement element) async {
-    var dbProducts = await db;
-
-    element.id = await dbProducts.insert(element.tableName, element.toMap());
-    return element;
-  }
-
-  Future<TableElement> insertProducts(TableElement element) async {
-    var dbProducts = await db;
-
-    element.id = await dbProducts.insert(element.tableName, element.toMap());
-    return element;
-  }*/
 
   Future<int> delete(TableElement element) async {
     var dbProducts = await db;
     return await dbProducts.delete(element.tableName, where: '_id = ?', whereArgs: [element.id]);
   }
   Future<int> update(TableElement element) async {
-    var dbProducts = await db;
-
-    return await dbProducts.update(element.tableName, element.toMap(), where: '_id = ?', whereArgs: [element.id]);
-  }
-
-  Future<int> updatePrice(TableElement element) async {
     var dbProducts = await db;
 
     return await dbProducts.update(element.tableName, element.toMap(), where: '_id = ?', whereArgs: [element.id]);

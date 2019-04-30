@@ -70,7 +70,6 @@ class ProductsFormState extends State<ProductsForm> {
           DropDownProviders(),
           TextFormField(
             keyboardType: TextInputType.number,
-            //initialValue: _priceEdit.priceUnit.toString(),
             inputFormatters: [
               BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
             ],
@@ -157,15 +156,10 @@ class DropDownProducts extends StatefulWidget {
 
 class _DropDownProductsState extends State<DropDownProducts> {
   List<Products> listProducts;
-  //List<Presentations> listPresentations;
-  //List<Brands> listBrands;
-  //List<Providers> listProvider;
+
   DbHelper _dataBase;
 
   Products dropdownProductsValue;
-  //Presentations dropdownPresentationsValue;
-  //Brands dropdownBrandsValue;
-  //Providers dropdownProvidersValue;
 
   @override
   void initState() {
@@ -183,26 +177,46 @@ class _DropDownProductsState extends State<DropDownProducts> {
   }
 
   Widget build(BuildContext context) {
-    if (listProducts != null) {
-      return DropdownButton<Products>(
-        value: dropdownProductsValue,
-        hint: Text('Selecione Producto'),
-        onChanged: (Products newValue) {
-          setState(() {
-            dropdownProductsValue = newValue;
-            _product = newValue;
-          });
-        },
-        items: listProducts.map<DropdownMenuItem<Products>>((Products value) {
-          return DropdownMenuItem<Products>(
-            value: value,
-            child: Text(value.product),
-          );
-        }).toList(),
-      );
-    } else {
-      return Text('No hay products');
-    }
+    return listProducts != null ?
+      products()
+    : Center(child: CircularProgressIndicator(),);
+  }
+
+  Widget products() {
+    return Row(
+      children: <Widget>[
+        DropdownButton<Products>(
+          value: dropdownProductsValue,
+          hint: Text('Selecione Producto'),
+          onChanged: (Products newValue) {
+            setState(() {
+              dropdownProductsValue = newValue;
+              _product = newValue;
+            });
+          },
+          items: listProducts.map<DropdownMenuItem<Products>>((Products value) {
+            return DropdownMenuItem<Products>(
+              value: value,
+              child: Text(value.product),
+            );
+          }).toList(),
+        ),
+        Spacer(),
+          Ink(
+            decoration: ShapeDecoration(
+              color: Colors.blueAccent,
+              shape: CircleBorder(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.add),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/createProduct');
+              },
+            ),
+          ),
+      ],
+    );
   }
 }
 
@@ -221,29 +235,36 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
   @override
   void initState() {
     super.initState();
-    _dataBase = new DbHelper();
+    loadList();
+  }
+
+  void updateList({Presentations presentation}) {
     _dataBase.getListPresentations().then((list) {
       setState(() {
-        if (list != null) {
-          listPresentations = list;
-        } else {
-          listPresentations = null;
+        listPresentations = list;
+        for(Presentations p in listPresentations){
+          if(p.presentation == presentation.presentation){
+            dropdownValue = p;
+          }
         }
       });
     });
   }
 
-  void updateList() {
+  void loadList(){
+    _dataBase = new DbHelper();
     _dataBase.getListPresentations().then((list) {
       setState(() {
-        listPresentations = list;
+        if (list != null) {
+          listPresentations = list;
+        }
       });
     });
   }
 
   Widget build(BuildContext context) {
-    if (listPresentations != null) {
-      return Row(
+    return listPresentations != null ?
+       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -279,10 +300,9 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
             ),
           ),
         ],
-      );
-    } else {
-      return Text('No hay Presentaciones disponibles');
-    }
+      )
+      :  Text('No hay Presentaciones disponibles');
+    
   }
 
   void insertPresentations(BuildContext context) {
@@ -320,7 +340,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                             _dataBase = new DbHelper();
                             presentation.presentation = presentationValue.text;
                             _dataBase.insert(presentation).then((value) {
-                              updateList();
+                              updateList(presentation: presentation);
                             });
                             Navigator.of(context).pop();
                           }
@@ -530,16 +550,12 @@ class _EditPricesState extends State<EditPrices> {
                   num unit = num.tryParse(priceUnit.text);
                   num ofert = num.tryParse(priceOfert.text);
                   if (unit != null && ofert != null) {
-                    print('press update');
                     Prices priceUpdate;
                   priceUpdate = _price;
                   priceUpdate.priceUnit = unit;
                   priceUpdate.promocion = ofert;
-                  DbHelper data = new DbHelper();
-                  data.update(priceUpdate).then((result){
-                    Navigator.of(context).pop();
-                    blocDetailProduct.fetchAllproductsDetail(priceUpdate.product);
-                  });
+                  blocDetailProduct.updateProductsDetail(priceUpdate);
+                  Navigator.of(context).pop();
                   return Center(child: CircularProgressIndicator(),);
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
