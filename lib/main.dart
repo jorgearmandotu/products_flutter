@@ -3,7 +3,7 @@ import './ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
 import './models/models.dart';
-import './ui/widgets/creates.dart';
+import './ui/widgets/creates_providers.dart';
 import './ui/widgets/create_products.dart';
 import './ui/widgets/create_prices.dart';
 import './ui/widgets/ProductDetail.dart';
@@ -63,34 +63,13 @@ class ProductsView extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.blueAccent,
         onPressed: () {
-          Navigator.pushNamed(context, '/menu');
+          Navigator.pushNamed(context, '/createPrices');
         },
         child: Icon(
           Icons.add,
           color: Colors.white,
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 50.0,
-          color: Colors.blueAccent,
-          child: Row(children: <Widget>[
-            Column(
-              children: <Widget>[
-                Expanded(
-                    child: IconButton(
-                  icon: Icon(
-                    Icons.filter_none,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {},
-                )),
-                Text('marca'),
-              ],
-            ),
-          ]),
         ),
       ),
     );
@@ -169,56 +148,70 @@ class MenuView extends StatelessWidget {
         title: 'Opciones',
         context: context,
       ),
-      body: ListView(
+      body: GridView.count(
+        crossAxisCount: 2,
         padding: EdgeInsets.symmetric(horizontal: sizeWidth*0.2),
         children: <Widget>[
-          RaisedButton(
-            child: Text('Add precios'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/createPrices');
-            },
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.add_shopping_cart),
+                FlatButton(
+                  child: Text('Agregar Productos'),
+                  onPressed: () {Navigator.pushNamed(context, '/createProduct');}
+                  ,
+                )
+              ],
+            )
           ),
-          RaisedButton(
-            child: Text('Add producto'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/createProduct');
-              },
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.category),
+                FlatButton(
+                  child: Text('Agregar Categorias'),
+                  onPressed: () {Navigator.pushNamed(context, '/createCategory');}
+                  ,
+                )
+              ],
+            )
           ),
-          RaisedButton(
-            child: Text('Add categoria'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/createCategory');
-            },
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.loyalty),
+                FlatButton(
+                  child: Text('Agregar Marcas'),
+                  onPressed: () {Navigator.pushNamed(context, '/createBrand');}
+                  ,
+                )
+              ],
+            )
           ),
-          RaisedButton(
-            child: Text('Add marca'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              //Navigator.push(context, MaterialPageRoute(builder: (context) => CreateBrand()));
-              Navigator.pushNamed(context, '/createBrand');
-            },
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.store),
+                FlatButton(
+                  child: Text('Agregar Tiendas'),
+                  onPressed: () {Navigator.pushNamed(context, '/createProvider');}
+                  ,
+                )
+              ],
+            )
           ),
-          RaisedButton(
-            child: Text('Add presentacion'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {},
-          ),
-          RaisedButton(
+          /*RaisedButton(
             child: Text('Add proveedor'),
             color: Colors.blueAccent,
             textColor: Colors.white,
             onPressed: () {
               Navigator.pushNamed(context, '/createProvider');
             },
-          ),
+          ),*/
         ],
       ),
     );

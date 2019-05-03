@@ -5,14 +5,13 @@ import '../../models/models.dart';
 import '../../bloc/ListDetailBloc.dart';
 
 class CreateProducts extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Productos',
+        title: 'Add Productos',
         context: context,
+        menu: false,
       ),
       body: ProductsForm(),
     );
@@ -42,7 +41,7 @@ class ProductsFormState extends State<ProductsForm> {
     return Form(
       key: _formKey,
       child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: _sizeWidth*0.1),
+        padding: EdgeInsets.symmetric(horizontal: _sizeWidth * 0.1),
         children: <Widget>[
           TextFormField(
             controller: productName,
@@ -70,36 +69,41 @@ class ProductsFormState extends State<ProductsForm> {
           DropDownCategories(),
           Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
-            child: RaisedButton(
-              onPressed: () {
-                _dataBase = new DbHelper();
-                if (_formKey.currentState.validate()) { 
-                  if(_category != null){
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('procesando'),
-                    ));
-                     Products productInsert = new Products();
-                    productInsert.product = productName.text;
-                    productInsert.unit = productUnit.text;
-                    productInsert.category = _category.id;
-                    _category = null;
-                    _dataBase.insert(productInsert).then((value) {
-                    Navigator.of(context).pop();
-                    bloc.fetchAllProducts();
-                    });
-                  }else{
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('Seleccione categoria'),
-                    ));
-                  }
-                }
-              },
-              child: Text('Añadir'),
-            ),
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 100.0),
+            child: _button(),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _button() {
+    return RaisedButton(
+      color: Colors.blueAccent,
+      onPressed: () {
+        _dataBase = new DbHelper();
+        if (_formKey.currentState.validate()) {
+          if (_category != null) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('procesando'),
+            ));
+            Products productInsert = new Products();
+            productInsert.product = productName.text;
+            productInsert.unit = productUnit.text;
+            productInsert.category = _category.id;
+            _category = null;
+            _dataBase.insert(productInsert).then((value) {
+              Navigator.of(context).pop();
+              bloc.fetchAllProducts();
+            });
+          } else {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('Seleccione categoria'),
+            ));
+          }
+        }
+      },
+      child: Text('Agregar', style: TextStyle(color: Colors.white),),
     );
   }
 }
@@ -142,15 +146,15 @@ class _DropdownState extends State<DropDownCategories> {
             _category = newValue;
           });
         },
-        items: listCategories.map<DropdownMenuItem<Categories>>((Categories value) {
+        items: listCategories
+            .map<DropdownMenuItem<Categories>>((Categories value) {
           return DropdownMenuItem<Categories>(
             value: value,
             child: Text(value.category),
           );
         }).toList(),
       );
-    }
-    else{
+    } else {
       return Text('No hay categorias agregadas');
     }
   }

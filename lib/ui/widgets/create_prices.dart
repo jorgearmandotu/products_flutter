@@ -1,10 +1,11 @@
-//create prices and presentation
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/models.dart';
 import '../../bloc/listProductDetailBloc.dart';
+import '../../bloc/dropdownBloc.dart';
+import '../../helpers/fancy_fab.dart';
 
 var _sizeWidth;
 
@@ -14,16 +15,17 @@ class CreatePrices extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _sizeWidth = MediaQuery.of(context).size.width;
-    if (idPrice == null) {
-      return Scaffold(
+    return idPrice == null ?
+      Scaffold(
         appBar: MyAppBar(
-          title: 'Precios',
+          title: 'Add Precios',
           context: context,
+          menu: true,
         ),
         body: ProductsForm(),
-      );
-    } else {
-      return Scaffold(
+        floatingActionButton: FancyFab(),
+      )
+      : Scaffold(
         appBar: MyAppBar(
           title: 'editar Precios',
           context: context,
@@ -32,7 +34,6 @@ class CreatePrices extends StatelessWidget {
           idPrice: idPrice,
         ),
       );
-    }
   }
 }
 
@@ -65,16 +66,16 @@ class ProductsFormState extends State<ProductsForm> {
         padding: EdgeInsets.symmetric(horizontal: _sizeWidth * 0.1),
         children: <Widget>[
           DropDownProducts(),
-          DropDownPresentations(),
-          DropDownBrands(),
           DropDownProviders(),
+          DropDownBrands(),
+          DropDownPresentations(),
           TextFormField(
             keyboardType: TextInputType.number,
             inputFormatters: [
               BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
             ],
             controller: productVlrUnit,
-            decoration: InputDecoration(labelText: 'Valor unitario: '),
+            decoration: InputDecoration(labelText: '\$ Valor Unitario: '),
             validator: (value) {
               if (value.isEmpty) {
                 return 'Debe ingresar el valor de la unidad';
@@ -98,7 +99,7 @@ class ProductsFormState extends State<ProductsForm> {
               }
             },
             decoration: InputDecoration(
-              labelText: 'valor en oferta: ',
+              labelText: '\$ Valor en Oferta: ',
             ),
             controller: productPromocion,
           ),
@@ -183,39 +184,21 @@ class _DropDownProductsState extends State<DropDownProducts> {
   }
 
   Widget products() {
-    return Row(
-      children: <Widget>[
-        DropdownButton<Products>(
-          value: dropdownProductsValue,
-          hint: Text('Selecione Producto'),
-          onChanged: (Products newValue) {
-            setState(() {
-              dropdownProductsValue = newValue;
-              _product = newValue;
-            });
-          },
-          items: listProducts.map<DropdownMenuItem<Products>>((Products value) {
-            return DropdownMenuItem<Products>(
-              value: value,
-              child: Text(value.product),
-            );
-          }).toList(),
-        ),
-        Spacer(),
-          Ink(
-            decoration: ShapeDecoration(
-              color: Colors.blueAccent,
-              shape: CircleBorder(),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.add),
-              color: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, '/createProduct');
-              },
-            ),
-          ),
-      ],
+    return DropdownButton<Products>(
+      value: dropdownProductsValue,
+      hint: Text('Selecione Producto'),
+      onChanged: (Products newValue) {
+        setState(() {
+          dropdownProductsValue = newValue;
+          _product = newValue;
+        });
+      },
+      items: listProducts.map<DropdownMenuItem<Products>>((Products value) {
+        return DropdownMenuItem<Products>(
+          value: value,
+          child: Text(value.product),
+        );
+      }).toList(),
     );
   }
 }
@@ -345,7 +328,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                             Navigator.of(context).pop();
                           }
                         },
-                        child: Text('Añadir'),
+                        child: Text('Agregar', style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -419,36 +402,44 @@ class _DropDownProvidersState extends State<DropDownProviders> {
   @override
   void initState() {
     super.initState();
-    _dataBase = new DbHelper();
-    _dataBase.getListProviders().then((list) {
-      setState(() {
-        listProviders = list;
-      });
-    });
+      providerBloc.open();
   }
 
   Widget build(BuildContext context) {
-    if (listProviders != null) {
-      return DropdownButton<Providers>(
-        value: dropdownValue,
-        hint: Text('Seleccione Proveedor'),
-        onChanged: (Providers newValue) {
-          setState(() {
-            dropdownValue = newValue;
-            _provider = newValue;
-          });
-        },
-        items:
-            listProviders.map<DropdownMenuItem<Providers>>((Providers value) {
-          return DropdownMenuItem<Providers>(
-            value: value,
-            child: Text(value.provider),
+    return getList();
+  }
+
+  Widget getList(){
+    return StreamBuilder(
+      stream: providerBloc.allProviders,
+      builder: (context, AsyncSnapshot<List<Providers>> snapshot){
+        if(snapshot.hasData){
+          return buildListDropdown(snapshot);
+        }else if(snapshot.hasError){
+          return Text(snapshot.error.toString());
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget buildListDropdown(AsyncSnapshot<List<Providers>> snapshot){
+    return DropdownButton<Providers>(
+      value: dropdownValue,
+      hint: Text('Seleccione proveedor'),
+      onChanged: (Providers newValue){
+        setState(() {
+         dropdownValue = newValue;
+         _provider = newValue;
+        });
+      },
+      items: snapshot.data.map<DropdownMenuItem<Providers>>((Providers value){
+        return DropdownMenuItem<Providers>(
+          value: value,
+          child: Text(value.provider),
           );
-        }).toList(),
-      );
-    } else {
-      return Text('No hay Proveedores disponibles');
-    }
+      }).toList(),
+    );
   }
 }
 

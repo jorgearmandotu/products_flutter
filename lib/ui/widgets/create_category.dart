@@ -51,6 +51,7 @@ class MyCategoryFormState extends State<CategoryForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
+              color: Colors.blueAccent,
               onPressed: (){
                 Categories category = new Categories();
                 if(_formKey.currentState.validate()) {
@@ -63,7 +64,7 @@ class MyCategoryFormState extends State<CategoryForm> {
                   });
                 }
               },
-              child: Text('Añadir'),
+              child: Text('Agregar', style: TextStyle(color: Colors.white,)),
             ),
           ),
         ],

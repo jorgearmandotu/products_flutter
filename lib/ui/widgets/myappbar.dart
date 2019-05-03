@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class MyAppBar extends AppBar {
-  MyAppBar({String title, BuildContext context}): super(
+  MyAppBar({String title, BuildContext context, bool menu}): super(
     title: Text(title),
       centerTitle: true,
       backgroundColor: Colors.blueAccent,
-      actions: <Widget>[
+      actions: menu == true ? <Widget>[
         IconButton(
           icon: Icon(Icons.menu),
-          onPressed: () {
+          onPressed: (){
+            Navigator.pushNamed(context, '/menu');
           },
-        ),
-      ],
+        )
+      ]
+      : null,
   );
 
 }

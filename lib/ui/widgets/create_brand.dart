@@ -51,6 +51,7 @@ class MyBrandFormState extends State<BrandForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
+              color: Colors.blueAccent,
               onPressed: (){
                 Brands brand = new Brands();
                 if(_formKey.currentState.validate()) {
@@ -62,7 +63,7 @@ class MyBrandFormState extends State<BrandForm> {
                   });
                 }
               },
-              child: Text('Añadir'),
+              child: Text('Agregar', style: TextStyle(color: Colors.white),),
             ),
           ),
         ],

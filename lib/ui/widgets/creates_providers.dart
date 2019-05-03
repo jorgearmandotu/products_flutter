@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../data/data_helper.dart';
 import '../../models/models.dart';
 import './myappbar.dart';
+import '../../bloc/dropdownBloc.dart';
 
 class Creates extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    //return AlertDialog(
-    //  title: Text('Agregar'),
-    //  content: ProviderForm(),
-    //);
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Provider',
+        title: 'Add Proveedor',
         context: context,
       ),
       body: ProviderForm(),
@@ -33,8 +29,6 @@ class ProviderFormState extends State<ProviderForm> {
   final providerName = TextEditingController();
   final providerAddress = TextEditingController();
   final providerPhone = TextEditingController();
-  
-  DbHelper _dataBase = new DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +63,7 @@ class ProviderFormState extends State<ProviderForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
             child: RaisedButton(
+              color: Colors.blueAccent,
               onPressed: (){
                 Providers provider = new Providers();
                 if(_formKey.currentState.validate()) {
@@ -78,13 +73,10 @@ class ProviderFormState extends State<ProviderForm> {
                   provider.address = providerAddress.text;
                   provider.phone = providerPhone.text;
                   Navigator.pop(context);
-                  //Navigator.pop(context);
-                  _dataBase.insert(provider).then((value) {
-                    //actuaizar lista
-                  });
+                  providerBloc.addProviderToList(provider);
                 }
               },
-              child: Text('Añadir'),
+              child: Text('Agregar', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
