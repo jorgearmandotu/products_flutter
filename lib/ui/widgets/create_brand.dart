@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './myappbar.dart';
-import '../../data/data_helper.dart';
 import '../../models/models.dart';
+import '../../bloc/brand_bloc.dart';
 
 class CreateBrand extends StatelessWidget {
   @override
@@ -27,8 +27,20 @@ class BrandForm extends StatefulWidget {
 class MyBrandFormState extends State<BrandForm> {
   final _formKey = GlobalKey<FormState>();
   final brandName = TextEditingController();
+
+  @override
+  void initState() {
+    brandBloc.open();
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    brandBloc.dispose();
+    super.dispose();
+  }
   
-  DbHelper _dataBase = new DbHelper();
+  //DbHelper _dataBase = new DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +70,11 @@ class MyBrandFormState extends State<BrandForm> {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   brand.brand = brandName.text;
-                  _dataBase.insert(brand).then((value) {
+                  brandBloc.addBrandsToList(brand);
+                  Navigator.pop(context);
+                  /*_dataBase.insert(brand).then((value) {
                     Navigator.popUntil(context, ModalRoute.withName('/'));
-                  });
+                  });*/
                 }
               },
               child: Text('Agregar', style: TextStyle(color: Colors.white),),

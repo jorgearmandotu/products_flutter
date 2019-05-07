@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './myappbar.dart';
-import '../../data/data_helper.dart';
 import '../../models/models.dart';
+import '../../bloc/category_bloc.dart';
 
 class CreateCategory extends StatelessWidget {
   @override
@@ -27,8 +27,6 @@ class CategoryForm extends StatefulWidget {
 class MyCategoryFormState extends State<CategoryForm> {
   final _formKey = GlobalKey<FormState>();
   final categoryName = TextEditingController();
-  
-  DbHelper _dataBase = new DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +56,9 @@ class MyCategoryFormState extends State<CategoryForm> {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   category.category = categoryName.text;
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
-                  //Navigator.pop(context);
-                  _dataBase.insert(category).then((value) {
-                  });
+                  //Navigator.popUntil(context, ModalRoute.withName('/'));
+                  categoryBloc.addCategoryToList(category);
+                  Navigator.pop(context);
                 }
               },
               child: Text('Agregar', style: TextStyle(color: Colors.white,)),

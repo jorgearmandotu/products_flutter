@@ -50,7 +50,7 @@ class ProductsView extends StatelessWidget {
           TextField(
                   controller: productName,
                   textCapitalization: TextCapitalization.words,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.right,
                   onChanged: (value) {
                     bloc.fetchAllProducts(nameProduct: value);
                   },
@@ -84,6 +84,18 @@ class ListProducts extends StatefulWidget {
 }
 
 class ListProductsState extends State<ListProducts> {
+
+  @override
+  void initState() {
+    //bloc.fetchAllProducts();
+    super.initState();
+  }
+
+   @override
+    void dispose(){
+      bloc.dispose();
+      super.dispose();
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -125,18 +137,6 @@ class ListProductsState extends State<ListProducts> {
       },
     );
   }
-
-  @override
-  void initState() {
-    super.initState();
-    bloc.fetchAllProducts();
-  }
-
-   @override
-    void dispose(){
-      bloc.dispose();
-      super.dispose();
-    }
 }
 
 class MenuView extends StatelessWidget {

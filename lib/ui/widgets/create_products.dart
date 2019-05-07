@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../data/data_helper.dart';
 import './myappbar.dart';
 import '../../models/models.dart';
 import '../../bloc/ListDetailBloc.dart';
+import '../../bloc/category_bloc.dart';
+import '../../bloc/product_bloc.dart';
 
 class CreateProducts extends StatelessWidget {
   @override
@@ -31,10 +32,7 @@ class ProductsFormState extends State<ProductsForm> {
   final _formKey = GlobalKey<FormState>();
   final productName = TextEditingController();
   final productUnit = TextEditingController();
-  //final productCategory = TextEditingController();
-  DbHelper _dataBase;
-  //ListDetailBloc bloc = new ListDetailBloc();
-
+  
   @override
   Widget build(BuildContext context) {
     var _sizeWidth = MediaQuery.of(context).size.width;
@@ -66,10 +64,20 @@ class ProductsFormState extends State<ProductsForm> {
               }
             },
           ),
-          DropDownCategories(),
+          Row(children: <Widget>[
+            DropDownCategories(),
+            RaisedButton(
+              color: Colors.blueAccent,
+              shape: CircleBorder(),
+              child: Icon(Icons.add, color: Colors.white,),
+              onPressed: (){
+                Navigator.pushNamed(context, '/createCategory');
+              },
+              ),
+          ],),
           Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 100.0),
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 70.0),
             child: _button(),
           ),
         ],
@@ -81,7 +89,6 @@ class ProductsFormState extends State<ProductsForm> {
     return RaisedButton(
       color: Colors.blueAccent,
       onPressed: () {
-        _dataBase = new DbHelper();
         if (_formKey.currentState.validate()) {
           if (_category != null) {
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -92,10 +99,9 @@ class ProductsFormState extends State<ProductsForm> {
             productInsert.unit = productUnit.text;
             productInsert.category = _category.id;
             _category = null;
-            _dataBase.insert(productInsert).then((value) {
-              Navigator.of(context).pop();
-              bloc.fetchAllProducts();
-            });
+            bloc.addProductToList(productInsert);
+            productBloc.fetchAllProducts();
+            Navigator.pop(context);
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
               content: Text('Seleccione categoria'),
@@ -118,44 +124,49 @@ class DropDownCategories extends StatefulWidget {
 class _DropdownState extends State<DropDownCategories> {
   List<Categories> listCategories;
   Categories dropdownValue;
-  DbHelper _dataBase;
+  //DbHelper _dataBase;
 
   @override
   void initState() {
+    categoryBloc.open();
     super.initState();
-    _dataBase = new DbHelper();
-    updateList();
   }
-
-  void updateList() {
-    _dataBase.getListCategories().then((list) {
-      setState(() {
-        listCategories = list;
-      });
-    });
+  
+  @override
+  void dispose() {
+    categoryBloc.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {
-    if (listCategories != null) {
-      return DropdownButton<Categories>(
-        value: dropdownValue,
-        hint: Text('Seleccione categoria'),
-        onChanged: (Categories newValue) {
-          setState(() {
-            dropdownValue = newValue;
-            _category = newValue;
-          });
-        },
-        items: listCategories
-            .map<DropdownMenuItem<Categories>>((Categories value) {
-          return DropdownMenuItem<Categories>(
-            value: value,
-            child: Text(value.category),
+    return StreamBuilder(
+      stream: categoryBloc.allCategories,
+      builder: (context, AsyncSnapshot<List<Categories>> snapshot){
+        if(snapshot.hasData){
+          return getCategories(snapshot);
+        }else if(snapshot.hasError){
+          return Text(snapshot.hasError.toString());
+        }
+        return Center(child: CircularProgressIndicator(),);
+      },
+    );
+  }
+  Widget getCategories(AsyncSnapshot<List<Categories>> snapshot){
+    return DropdownButton<Categories>(
+      value: dropdownValue,
+      hint: Text('Seleccione Categoria'),
+      onChanged: (Categories newValue) {
+        setState(() {
+         dropdownValue = newValue;
+         _category = newValue;
+        });
+      },
+      items: snapshot.data.map<DropdownMenuItem<Categories>>((Categories value) {
+        return DropdownMenuItem<Categories>(
+          value: value,
+          child: Text(value.category),
           );
-        }).toList(),
-      );
-    } else {
-      return Text('No hay categorias agregadas');
-    }
+      }).toList(),
+    );
   }
 }

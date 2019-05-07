@@ -1,4 +1,3 @@
-//import 'dart:async';
 import '../models/models.dart';
 import 'package:rxdart/rxdart.dart';
 import '../data/data_helper.dart';
@@ -41,5 +40,9 @@ class ListDetailBloc {
     _listProducts.close();
   }
 
+  void open(){
+    _listProducts = PublishSubject<List<Products>>();
+    fetchAllProducts();
+  }
 }
-final bloc  = ListDetailBloc();
+final productBloc = ListDetailBloc();

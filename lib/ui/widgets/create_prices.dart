@@ -6,6 +6,8 @@ import '../../models/models.dart';
 import '../../bloc/listProductDetailBloc.dart';
 import '../../bloc/dropdownBloc.dart';
 import '../../helpers/fancy_fab.dart';
+import '../../bloc/product_bloc.dart';
+import '../../bloc/brand_bloc.dart';
 
 var _sizeWidth;
 
@@ -156,48 +158,51 @@ class DropDownProducts extends StatefulWidget {
 }
 
 class _DropDownProductsState extends State<DropDownProducts> {
-  List<Products> listProducts;
-
-  DbHelper _dataBase;
 
   Products dropdownProductsValue;
 
   @override
   void initState() {
+    productBloc.open();
     super.initState();
-    _dataBase = new DbHelper();
-    updateList();
   }
 
-  void updateList() {
-    _dataBase.getListProducts().then((list) {
-      setState(() {
-        listProducts = list;
-      });
-    });
+  @override
+  void dispose() {
+    productBloc.dispose();
+    super.dispose();
   }
 
-  Widget build(BuildContext context) {
-    return listProducts != null ?
-      products()
-    : Center(child: CircularProgressIndicator(),);
+  Widget build(BuildContext context){
+    return StreamBuilder(
+      stream: productBloc.allProducts,
+      builder: (context, AsyncSnapshot<List<Products>> snapshot){
+        if(snapshot.hasData){
+          return getProducts(snapshot);
+        }
+        else if(snapshot.hasError){
+          return Text(snapshot.hasError.toString());
+        }
+        return Center(child: CircularProgressIndicator(),);
+      },
+    );
   }
 
-  Widget products() {
+  Widget getProducts(AsyncSnapshot<List<Products>> snapshot){
     return DropdownButton<Products>(
       value: dropdownProductsValue,
-      hint: Text('Selecione Producto'),
-      onChanged: (Products newValue) {
+      hint: Text('Seleccione Producto'),
+      onChanged: (Products newValue){
         setState(() {
-          dropdownProductsValue = newValue;
-          _product = newValue;
+         dropdownProductsValue = newValue;
+         _product = newValue;
         });
       },
-      items: listProducts.map<DropdownMenuItem<Products>>((Products value) {
+      items: snapshot.data.map<DropdownMenuItem<Products>>((Products value) {
         return DropdownMenuItem<Products>(
           value: value,
           child: Text(value.product),
-        );
+          );
       }).toList(),
     );
   }
@@ -228,6 +233,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
         for(Presentations p in listPresentations){
           if(p.presentation == presentation.presentation){
             dropdownValue = p;
+            _presentation = p;
           }
         }
       });
@@ -253,7 +259,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
         children: <Widget>[
           DropdownButton<Presentations>(
             value: dropdownValue,
-            hint: Text('seleccione presentation'),
+            hint: Text('Presentation'),
             onChanged: (Presentations newValue) {
               setState(() {
                 dropdownValue = newValue;
@@ -268,8 +274,8 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
               );
             }).toList(),
           ),
-          Spacer(),
-          Ink(
+          
+          /*Ink(
             decoration: ShapeDecoration(
               color: Colors.blueAccent,
               shape: CircleBorder(),
@@ -281,7 +287,15 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                 insertPresentations(context);
               },
             ),
-          ),
+          ),*/
+          RaisedButton(
+            shape: CircleBorder(),
+            color: Colors.blueAccent,
+            child: Icon(Icons.add, color: Colors.white,),
+            onPressed: (){
+              insertPresentations(context);
+            },
+          )
         ],
       )
       :  Text('No hay Presentaciones disponibles');
@@ -348,24 +362,35 @@ class DropDownBrands extends StatefulWidget {
 }
 
 class _DropDownBrandsState extends State<DropDownBrands> {
-  List<Brands> listBrands;
-  DbHelper _dataBase;
   Brands dropdownValue;
 
   @override
   void initState() {
     super.initState();
-    _dataBase = new DbHelper();
-    _dataBase.getListBrands().then((list) {
-      setState(() {
-        listBrands = list;
-      });
-    });
+    brandBloc.open();
+  }
+  @override
+  void dispose(){
+    brandBloc.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {
-    if (listBrands != null) {
-      return DropdownButton<Brands>(
+    return StreamBuilder(
+      stream: brandBloc.allBrands,
+      builder: (context, AsyncSnapshot<List<Brands>> snapshot){
+        if(snapshot.hasData){
+          return getBrands(snapshot);
+        }else if(snapshot.hasError){
+          return Text(snapshot.error.toString());
+        }
+        return Center(child: CircularProgressIndicator(),);
+      },
+    );
+  }
+
+  Widget getBrands(AsyncSnapshot<List<Brands>> snapshot){
+    return DropdownButton<Brands>(
         value: dropdownValue,
         hint: Text('seleccione Marca'),
         onChanged: (Brands newValue) {
@@ -374,16 +399,13 @@ class _DropDownBrandsState extends State<DropDownBrands> {
             _brand = newValue;
           });
         },
-        items: listBrands.map<DropdownMenuItem<Brands>>((Brands value) {
+        items: snapshot.data.map<DropdownMenuItem<Brands>>((Brands value) {
           return DropdownMenuItem<Brands>(
             value: value,
             child: Text(value.brand),
           );
         }).toList(),
       );
-    } else {
-      return Text('No hay Marcas disponibles');
-    }
   }
 }
 
@@ -396,13 +418,18 @@ class DropDownProviders extends StatefulWidget {
 
 class _DropDownProvidersState extends State<DropDownProviders> {
   List<Providers> listProviders;
-  DbHelper _dataBase;
   Providers dropdownValue;
 
   @override
   void initState() {
     super.initState();
       providerBloc.open();
+  }
+
+  @override
+  void dispose(){
+    providerBloc.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {
