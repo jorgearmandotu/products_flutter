@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import './myappbar.dart';
 import '../../models/models.dart';
-import '../../bloc/ListDetailBloc.dart';
+//import '../../bloc/ListDetailBloc.dart';
 import '../../bloc/category_bloc.dart';
-import '../../bloc/product_bloc.dart';
+//import '../../bloc/product_bloc.dart';
+import '../../bloc/products_global_bloc.dart';
 
 class CreateProducts extends StatelessWidget {
   @override
@@ -99,8 +100,9 @@ class ProductsFormState extends State<ProductsForm> {
             productInsert.unit = productUnit.text;
             productInsert.category = _category.id;
             _category = null;
-            bloc.addProductToList(productInsert);
-            productBloc.fetchAllProducts();
+            //bloc.addProductToList(productInsert);
+            //productBloc.fetchAllProducts();
+            globalProductsBloc.addProductToList(productInsert);
             Navigator.pop(context);
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(

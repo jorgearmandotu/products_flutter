@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import './ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
 import './models/models.dart';
@@ -7,7 +6,9 @@ import './ui/widgets/creates_providers.dart';
 import './ui/widgets/create_products.dart';
 import './ui/widgets/create_prices.dart';
 import './ui/widgets/ProductDetail.dart';
-import './bloc/ListDetailBloc.dart';
+//import './bloc/ListDetailBloc.dart';
+import './ui/widgets/menu_opciones.dart';
+import './bloc/products_global_bloc.dart';
 
 void main() => runApp(ProductsApp());
 
@@ -16,8 +17,8 @@ class ProductsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gestion de Productos',
-      theme: ThemeData(
-        primaryColor: Colors.blueAccent,
+      theme: ThemeData.dark(
+        //primaryColor: Colors.blueAccent,
       ),
       initialRoute: '/',
       routes: {
@@ -50,9 +51,10 @@ class ProductsView extends StatelessWidget {
           TextField(
                   controller: productName,
                   textCapitalization: TextCapitalization.words,
-                  textAlign: TextAlign.right,
+                  textAlign: TextAlign.left,
                   onChanged: (value) {
-                    bloc.fetchAllProducts(nameProduct: value);
+                    //bloc.fetchAllProducts(nameProduct: value);
+                    globalProductsBloc.fetchAllProducts(nameProduct: value);
                   },
                 ),
           Expanded(
@@ -87,13 +89,14 @@ class ListProductsState extends State<ListProducts> {
 
   @override
   void initState() {
-    //bloc.fetchAllProducts();
+    globalProductsBloc.fetchAllProducts();
     super.initState();
   }
 
    @override
     void dispose(){
-      bloc.dispose();
+      //bloc.dispose();
+      globalProductsBloc.dispose();
       super.dispose();
     }
 
@@ -104,7 +107,8 @@ class ListProductsState extends State<ListProducts> {
 
   Widget _getList() {
     return StreamBuilder(
-      stream: bloc.allProducts,
+      //stream: bloc.allProducts,
+      stream: globalProductsBloc.allProducts,
       builder: (context, AsyncSnapshot<List<Products>> snapshot){
         if(snapshot.hasData){
            return buildList(snapshot);
@@ -139,81 +143,3 @@ class ListProductsState extends State<ListProducts> {
   }
 }
 
-class MenuView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var sizeWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: MyAppBar(
-        title: 'Opciones',
-        context: context,
-      ),
-      body: GridView.count(
-        crossAxisCount: 2,
-        padding: EdgeInsets.symmetric(horizontal: sizeWidth*0.2),
-        children: <Widget>[
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.add_shopping_cart),
-                FlatButton(
-                  child: Text('Agregar Productos'),
-                  onPressed: () {Navigator.pushNamed(context, '/createProduct');}
-                  ,
-                )
-              ],
-            )
-          ),
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.category),
-                FlatButton(
-                  child: Text('Agregar Categorias'),
-                  onPressed: () {Navigator.pushNamed(context, '/createCategory');}
-                  ,
-                )
-              ],
-            )
-          ),
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.loyalty),
-                FlatButton(
-                  child: Text('Agregar Marcas'),
-                  onPressed: () {Navigator.pushNamed(context, '/createBrand');}
-                  ,
-                )
-              ],
-            )
-          ),
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.store),
-                FlatButton(
-                  child: Text('Agregar Tiendas'),
-                  onPressed: () {Navigator.pushNamed(context, '/createProvider');}
-                  ,
-                )
-              ],
-            )
-          ),
-          /*RaisedButton(
-            child: Text('Add proveedor'),
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/createProvider');
-            },
-          ),*/
-        ],
-      ),
-    );
-  }
-}

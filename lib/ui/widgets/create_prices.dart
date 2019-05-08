@@ -6,16 +6,19 @@ import '../../models/models.dart';
 import '../../bloc/listProductDetailBloc.dart';
 import '../../bloc/dropdownBloc.dart';
 import '../../helpers/fancy_fab.dart';
-import '../../bloc/product_bloc.dart';
+//import '../../bloc/product_bloc.dart';
 import '../../bloc/brand_bloc.dart';
+import '../../bloc/products_global_bloc.dart';
 
 var _sizeWidth;
 
 class CreatePrices extends StatelessWidget {
   final int idPrice;
-  CreatePrices({this.idPrice});
+  final Products prod;
+  CreatePrices({this.idPrice, this.prod});
   @override
   Widget build(BuildContext context) {
+    print(prod.product);
     _sizeWidth = MediaQuery.of(context).size.width;
     return idPrice == null ?
       Scaffold(
@@ -163,19 +166,21 @@ class _DropDownProductsState extends State<DropDownProducts> {
 
   @override
   void initState() {
-    productBloc.open();
+    //productBloc.open();
+    globalProductsBloc.fetchAllProducts();
     super.initState();
   }
 
   @override
   void dispose() {
-    productBloc.dispose();
+    //productBloc.dispose();
     super.dispose();
   }
 
   Widget build(BuildContext context){
     return StreamBuilder(
-      stream: productBloc.allProducts,
+      //stream: productBloc.allProducts,
+      stream: globalProductsBloc.allProducts,
       builder: (context, AsyncSnapshot<List<Products>> snapshot){
         if(snapshot.hasData){
           return getProducts(snapshot);

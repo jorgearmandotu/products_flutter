@@ -5,14 +5,15 @@ import '../../helpers/ColorsList.dart';
 import '../widgets/create_prices.dart';
 import 'package:intl/intl.dart';
 import '../../bloc/listProductDetailBloc.dart';
+import '../widgets/create_prices.dart';
 
 //Products _productDetail;
-class ProductDetail extends StatelessWidget{
+class ProductDetail extends StatelessWidget {
   final Products _product;
 
   ProductDetail(this._product);
   //ProductDetail(Products product){_productDetail = product;}
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,15 +29,14 @@ class ProductDetail extends StatelessWidget{
 class DetailProductList extends StatefulWidget {
   final Products _product;
   DetailProductList(this._product);
-  
+
   @override
-  State<StatefulWidget> createState(){
+  State<StatefulWidget> createState() {
     return DetailProductListState(_product);
-  }  
+  }
 }
 
-class DetailProductListState extends State<DetailProductList>{
-
+class DetailProductListState extends State<DetailProductList> {
   final Products _product;
   DetailProductListState(this._product);
 
@@ -53,7 +53,7 @@ class DetailProductListState extends State<DetailProductList>{
     blocDetailProduct.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return _getList();
@@ -62,24 +62,27 @@ class DetailProductListState extends State<DetailProductList>{
   Widget _getList() {
     return StreamBuilder(
       stream: blocDetailProduct.detailProducts,
-      builder: (context, AsyncSnapshot<List<ProductsDetail>> snapshot){
-        if(snapshot.hasData){
-          return buildList(snapshot);
-        }
-        else if(snapshot.hasError){
+      builder: (context, AsyncSnapshot<List<ProductsDetail>> snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data.length > 0
+              ? buildList(snapshot)
+              : buildMessage();
+        } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
-        return Center(child: CircularProgressIndicator(),);
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
 
-  Widget buildList(AsyncSnapshot<List<ProductsDetail>> snapshot){
+  Widget buildList(AsyncSnapshot<List<ProductsDetail>> snapshot) {
     CardColor color = new CardColor();
     var money = NumberFormat.simpleCurrency();
     return ListView.builder(
       itemCount: snapshot.data.length,
-      itemBuilder: (BuildContext context, index){
+      itemBuilder: (BuildContext context, index) {
         ProductsDetail product = snapshot.data[index];
         return Card(
           borderOnForeground: false,
@@ -89,23 +92,96 @@ class DetailProductListState extends State<DetailProductList>{
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}', style: TextStyle(fontSize: 20.0, color: Colors.white70), textAlign: TextAlign.justify,),
+              Text(
+                'proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}',
+                style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                textAlign: TextAlign.justify,
+              ),
               ButtonBar(
                 mainAxisSize: MainAxisSize.min,
                 alignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  IconButton(icon: Icon(Icons.edit, color: Colors.white), onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreatePrices(idPrice: product.idPrices,)));
-                  },),
-                  IconButton(icon: Icon(Icons.delete, color: Colors.white), onPressed: (){
-                    blocDetailProduct.deleteProductDetail(product.idPrices);
-                  },),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CreatePrices(
+                                idPrice: product.idPrices,
+                              )));
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.white),
+                    onPressed: () {
+                      blocDetailProduct.deleteProductDetail(product.idPrices);
+                    },
+                  ),
                 ],
               )
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget buildMessage() {
+    return Center(
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        color: Colors.teal,
+        child: Container(
+          padding: EdgeInsets.all(20.0),
+          height: 240.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.info,
+                size: 52.0,
+              ),
+              Text(
+                'No hay valores agregados\npara este producto',
+                style: TextStyle(color: Colors.white, fontSize: 22.0),
+                textAlign: TextAlign.center,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  InkWell(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.add_circle_outline, size: 32.0,),
+                        Text(
+                          'Agregar\nvalores',
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      //Navigator.pushNamed(context, '/createPrices', arguments: <String, Products>{'prod' : _product});
+                      Navigator. push(context, MaterialPageRoute(builder: (context)=>CreatePrices(prod: _product)));
+                    },
+                  ),
+                  Container(width: 20.0),
+                  InkWell(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.delete_forever, size: 32.0,),
+                        Text(
+                          'Eliminar\nProducto',
+                        ),
+                      ],
+                    ),
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
