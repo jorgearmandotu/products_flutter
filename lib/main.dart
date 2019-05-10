@@ -17,8 +17,10 @@ class ProductsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gestion de Productos',
-      theme: ThemeData.dark(
-        //primaryColor: Colors.blueAccent,
+      theme: ThemeData(
+        primaryColor: Colors.green,
+        accentColor: Colors.orange,
+        
       ),
       initialRoute: '/',
       routes: {
@@ -43,11 +45,12 @@ class ProductsView extends StatelessWidget {
       appBar: AppBar(
         title: Text('Productos'),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+        //backgroundColor: Colors.purple,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          Text('buscar'),
           TextField(
                   controller: productName,
                   textCapitalization: TextCapitalization.words,
@@ -65,13 +68,13 @@ class ProductsView extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
+        //backgroundColor: Colors.blueAccent,
         onPressed: () {
           Navigator.pushNamed(context, '/createPrices');
         },
         child: Icon(
           Icons.add,
-          color: Colors.white,
+          //color: Colors.white,
         ),
       ),
     );
@@ -131,9 +134,10 @@ class ListProductsState extends State<ListProducts> {
               Navigator.push(context, new MaterialPageRoute(builder: (context) {
                 return ProductDetail(product);
               }));
+              globalProductsBloc.fetchAllProducts();
             },
             child: ListTile(
-              leading: const Icon(Icons.restaurant_menu, color: Colors.deepPurple,),
+              leading: const Icon(Icons.restaurant_menu, /*color: Colors.deepPurple*/),
               title: Text(product.product, style: TextStyle(fontSize: 18)),
               subtitle: Text(product.unit),
             )

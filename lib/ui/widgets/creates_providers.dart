@@ -34,8 +34,8 @@ class ProviderFormState extends State<ProviderForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
         children: <Widget>[
           TextFormField(
             controller: providerName,
@@ -61,9 +61,9 @@ class ProviderFormState extends State<ProviderForm> {
             controller: providerPhone,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 70.0),
             child: RaisedButton(
-              color: Colors.blueAccent,
+              color: Colors.orange,
               onPressed: (){
                 Providers provider = new Providers();
                 if(_formKey.currentState.validate()) {
@@ -76,7 +76,7 @@ class ProviderFormState extends State<ProviderForm> {
                   providerBloc.addProviderToList(provider);
                 }
               },
-              child: Text('Agregar', style: TextStyle(color: Colors.white)),
+              child: Text('Agregar', style: TextStyle(/*color: Colors.white*/)),
             ),
           ),
         ],

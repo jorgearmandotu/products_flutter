@@ -11,14 +11,12 @@ import '../../bloc/brand_bloc.dart';
 import '../../bloc/products_global_bloc.dart';
 
 var _sizeWidth;
-
 class CreatePrices extends StatelessWidget {
   final int idPrice;
   final Products prod;
   CreatePrices({this.idPrice, this.prod});
   @override
   Widget build(BuildContext context) {
-    print(prod.product);
     _sizeWidth = MediaQuery.of(context).size.width;
     return idPrice == null ?
       Scaffold(
@@ -112,9 +110,9 @@ class ProductsFormState extends State<ProductsForm> {
             padding: EdgeInsets.symmetric(
                 vertical: 18.0, horizontal: _sizeWidth * 0.2),
             child: RaisedButton(
-                color: Colors.blueAccent,
+                color: Colors.orange,
                 child: Text('Agregar'),
-                textColor: Colors.white,
+                //textColor: Colors.white,
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
                     if (_brand != null &&
@@ -139,7 +137,7 @@ class ProductsFormState extends State<ProductsForm> {
                       _product = null;
                       _presentation = null;
                       _provider = null;
-                      Navigator.of(context).pop();
+                      Navigator.of(context).popUntil(ModalRoute.withName('/'));
                     } else {
                       Scaffold.of(context).showSnackBar(
                           SnackBar(content: Text('Ingrese todos los datos')));
@@ -195,7 +193,6 @@ class _DropDownProductsState extends State<DropDownProducts> {
 
   Widget getProducts(AsyncSnapshot<List<Products>> snapshot){
     return DropdownButton<Products>(
-      value: dropdownProductsValue,
       hint: Text('Seleccione Producto'),
       onChanged: (Products newValue){
         setState(() {
@@ -209,6 +206,7 @@ class _DropDownProductsState extends State<DropDownProducts> {
           child: Text(value.product),
           );
       }).toList(),
+      value: dropdownProductsValue,
     );
   }
 }
@@ -279,24 +277,10 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
               );
             }).toList(),
           ),
-          
-          /*Ink(
-            decoration: ShapeDecoration(
-              color: Colors.blueAccent,
-              shape: CircleBorder(),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.add),
-              color: Colors.white,
-              onPressed: () {
-                insertPresentations(context);
-              },
-            ),
-          ),*/
           RaisedButton(
             shape: CircleBorder(),
-            color: Colors.blueAccent,
-            child: Icon(Icons.add, color: Colors.white,),
+            color: Colors.orange,
+            child: Icon(Icons.add, /*color: Colors.white,*/),
             onPressed: (){
               insertPresentations(context);
             },
@@ -336,7 +320,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                         },
                       ),
                       RaisedButton(
-                        color: Colors.blueAccent,
+                        color: Colors.orange,
                         onPressed: () {
                           if (presentationkey.currentState.validate()) {
                             _dataBase = new DbHelper();
@@ -347,7 +331,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                             Navigator.of(context).pop();
                           }
                         },
-                        child: Text('Agregar', style: TextStyle(color: Colors.white),),
+                        child: Text('Agregar', style: TextStyle(/*color: Colors.white*/),),
                       ),
                     ],
                   ),
@@ -563,10 +547,10 @@ class _EditPricesState extends State<EditPrices> {
               },
             ),
             RaisedButton(
-              color: Colors.blueAccent,
+              color: Colors.orange,
               child: Text('Modificar',
                   style: TextStyle(
-                    color: Colors.white,
+                    //color: Colors.white,
                   )),
               onPressed: () {
                 if (_keyForm.currentState.validate()) {

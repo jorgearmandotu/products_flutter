@@ -29,7 +29,7 @@ class _FancyFabState extends State<FancyFab> with SingleTickerProviderStateMixin
     });
     _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _buttonColor = ColorTween(
-      begin: Colors.blueAccent,
+      //begin: Colors.blueAccent,
       end: Colors.redAccent,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -59,9 +59,7 @@ class _FancyFabState extends State<FancyFab> with SingleTickerProviderStateMixin
 
   Widget addProduct(){
     return new Container(
-      child: Hero(
-        tag: 'product',
-        child: FloatingActionButton(
+      child: FloatingActionButton(
         heroTag: 'producto',
         onPressed: (){
           animate();
@@ -70,7 +68,6 @@ class _FancyFabState extends State<FancyFab> with SingleTickerProviderStateMixin
         tooltip: 'Add Producto',
         child: Icon(Icons.add_shopping_cart),
       ),
-        )
     );
   }
 

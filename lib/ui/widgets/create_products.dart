@@ -68,9 +68,9 @@ class ProductsFormState extends State<ProductsForm> {
           Row(children: <Widget>[
             DropDownCategories(),
             RaisedButton(
-              color: Colors.blueAccent,
+              color: Colors.orange,
               shape: CircleBorder(),
-              child: Icon(Icons.add, color: Colors.white,),
+              child: Icon(Icons.add, /*color: Colors.white,*/),
               onPressed: (){
                 Navigator.pushNamed(context, '/createCategory');
               },
@@ -88,7 +88,7 @@ class ProductsFormState extends State<ProductsForm> {
 
   Widget _button() {
     return RaisedButton(
-      color: Colors.blueAccent,
+      color: Colors.orange,
       onPressed: () {
         if (_formKey.currentState.validate()) {
           if (_category != null) {
@@ -111,7 +111,7 @@ class ProductsFormState extends State<ProductsForm> {
           }
         }
       },
-      child: Text('Agregar', style: TextStyle(color: Colors.white),),
+      child: Text('Agregar', style: TextStyle(/*color: Colors.white*/),),
     );
   }
 }

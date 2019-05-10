@@ -32,8 +32,8 @@ class MyCategoryFormState extends State<CategoryForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
         children: <Widget>[
           TextFormField(
             controller: categoryName,
@@ -47,9 +47,9 @@ class MyCategoryFormState extends State<CategoryForm> {
             },
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 100.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 70.0),
             child: RaisedButton(
-              color: Colors.blueAccent,
+              color: Colors.orange,
               onPressed: (){
                 Categories category = new Categories();
                 if(_formKey.currentState.validate()) {
@@ -61,7 +61,7 @@ class MyCategoryFormState extends State<CategoryForm> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Agregar', style: TextStyle(color: Colors.white,)),
+              child: Text('Agregar', style: TextStyle(/*color: Colors.white,*/)),
             ),
           ),
         ],

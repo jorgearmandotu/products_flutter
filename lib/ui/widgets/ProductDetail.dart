@@ -5,7 +5,6 @@ import '../../helpers/ColorsList.dart';
 import '../widgets/create_prices.dart';
 import 'package:intl/intl.dart';
 import '../../bloc/listProductDetailBloc.dart';
-import '../widgets/create_prices.dart';
 
 //Products _productDetail;
 class ProductDetail extends StatelessWidget {
@@ -139,6 +138,7 @@ class DetailProductListState extends State<DetailProductList> {
               Icon(
                 Icons.info,
                 size: 52.0,
+                color: Colors.white,
               ),
               Text(
                 'No hay valores agregados\npara este producto',
@@ -152,9 +152,10 @@ class DetailProductListState extends State<DetailProductList> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(Icons.add_circle_outline, size: 32.0,),
+                        Icon(Icons.add_circle_outline, size: 32.0, color: Colors.white,),
                         Text(
                           'Agregar\nvalores',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
@@ -168,9 +169,10 @@ class DetailProductListState extends State<DetailProductList> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(Icons.delete_forever, size: 32.0,),
+                        Icon(Icons.delete_forever, size: 32.0, color: Colors.white),
                         Text(
                           'Eliminar\nProducto',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
