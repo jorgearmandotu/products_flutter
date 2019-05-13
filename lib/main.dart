@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:products_flutter/ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
 import './models/models.dart';
@@ -6,7 +7,6 @@ import './ui/widgets/creates_providers.dart';
 import './ui/widgets/create_products.dart';
 import './ui/widgets/create_prices.dart';
 import './ui/widgets/ProductDetail.dart';
-//import './bloc/ListDetailBloc.dart';
 import './ui/widgets/menu_opciones.dart';
 import './bloc/products_global_bloc.dart';
 
@@ -37,18 +37,32 @@ class ProductsApp extends StatelessWidget {
 }
 
 class ProductsView extends StatelessWidget {
-
   final productName = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Productos'),
-        centerTitle: true,
-        //backgroundColor: Colors.purple,
+      appBar: MyAppBar(
+        title: 'Productos',
+        menu: true,
+        context: context,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
+        child: content(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/createPrices');
+        },
+        child: Icon(
+          Icons.add,
+        ),
+      ),
+    );
+  }
+
+  Widget content(){
+    return Column(
         children: <Widget>[
           Text('buscar'),
           TextField(
@@ -61,23 +75,10 @@ class ProductsView extends StatelessWidget {
                   },
                 ),
           Expanded(
-            child: Container(
               child: ListProducts(),
-            ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        //backgroundColor: Colors.blueAccent,
-        onPressed: () {
-          Navigator.pushNamed(context, '/createPrices');
-        },
-        child: Icon(
-          Icons.add,
-          //color: Colors.white,
-        ),
-      ),
-    );
+      );
   }
 }
 
@@ -137,7 +138,7 @@ class ListProductsState extends State<ListProducts> {
               globalProductsBloc.fetchAllProducts();
             },
             child: ListTile(
-              leading: const Icon(Icons.restaurant_menu, /*color: Colors.deepPurple*/),
+              leading: const Icon(Icons.shopping_cart, /*color: Colors.deepPurple*/),
               title: Text(product.product, style: TextStyle(fontSize: 18)),
               subtitle: Text(product.unit),
             )

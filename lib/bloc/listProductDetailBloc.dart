@@ -39,6 +39,10 @@ class ListProductsDetailBloc {
     });
   }
 
+  deleteProduct( Products producto){
+    _dataDb.delete(producto);
+  }
+
   void dispose() {
     _listProductsDetail.close();
   }

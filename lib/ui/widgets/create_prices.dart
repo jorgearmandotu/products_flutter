@@ -282,7 +282,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
             color: Colors.orange,
             child: Icon(Icons.add, /*color: Colors.white,*/),
             onPressed: (){
-              insertPresentations(context);
+              insertPresentations();
             },
           )
         ],
@@ -291,22 +291,22 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
     
   }
 
-  void insertPresentations(BuildContext context) {
+  void insertPresentations() {
     final presentationValue = TextEditingController();
     final presentationkey = GlobalKey<FormState>();
 
     Presentations presentation = new Presentations();
     showDialog(
-        context: context,
+      context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Nueva presentacion'),
-            content: ListView(
-              children: <Widget>[
-                Form(
+            content: Container(
+              height: 130,
+              child: Form(
                   key: presentationkey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       TextFormField(
                         controller: presentationValue,
@@ -331,12 +331,11 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
                             Navigator.of(context).pop();
                           }
                         },
-                        child: Text('Agregar', style: TextStyle(/*color: Colors.white*/),),
+                        child: Text('Agregar',),
                       ),
                     ],
                   ),
                 ),
-              ],
             ),
           );
         });

@@ -6,14 +6,11 @@ class DropdownBloc {
   final _dataDB = new DbHelper();
   var _listProvider = PublishSubject<List<Providers>>();
 
-  //var providerSelect = PublishSubject<Providers>();
-
   int providerSelect = 0;
 
   List<Providers> _listProviderItems;
 
   Observable<List<Providers>> get allProviders => _listProvider.stream;
-  //Observable<Providers> get selectProvider => providerSelect.stream;
 
   fetcAllProviders() async{
     _listProviderItems = await _dataDB.getListProviders();
@@ -40,4 +37,3 @@ class DropdownBloc {
   }
 }
 final providerBloc = DropdownBloc();
-//DropdownBloc providerBloc;

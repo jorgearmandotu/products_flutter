@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:products_flutter/bloc/products_global_bloc.dart';
 import '../widgets/myappbar.dart';
 import '../../models/models.dart';
 import '../../helpers/ColorsList.dart';
@@ -6,13 +7,10 @@ import '../widgets/create_prices.dart';
 import 'package:intl/intl.dart';
 import '../../bloc/listProductDetailBloc.dart';
 
-//Products _productDetail;
 class ProductDetail extends StatelessWidget {
   final Products _product;
 
   ProductDetail(this._product);
-  //ProductDetail(Products product){_productDetail = product;}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +42,6 @@ class DetailProductListState extends State<DetailProductList> {
     super.initState();
     blocDetailProduct.open();
     blocDetailProduct = ListProductsDetailBloc(id: _product.id);
-    //blocDetailProduct.fetchAllproductsDetail(_product.id);
   }
 
   @override
@@ -93,7 +90,7 @@ class DetailProductListState extends State<DetailProductList> {
             children: <Widget>[
               Text(
                 'proveedor: ${product.provider}\nprecio: ${money.format(product.priceUnit)}\nMarca: ${product.brand}\nPresentacion: ${product.presentation}\nOferta: ${money.format(product.promocion)}',
-                style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                style: TextStyle(fontSize: 20.0, color: Colors.white),
                 textAlign: TextAlign.justify,
               ),
               ButtonBar(
@@ -176,7 +173,11 @@ class DetailProductListState extends State<DetailProductList> {
                         ),
                       ],
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      blocDetailProduct.deleteProduct(_product);
+                      Navigator.pop(context);
+                      globalProductsBloc.fetchAllProducts();
+                    },
                   ),
                 ],
               ),
