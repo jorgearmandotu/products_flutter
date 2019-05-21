@@ -112,6 +112,14 @@ class DbHelper {
     return maps.map((i)=>Providers.fromMap(i)).toList();
   }
 
+  Future<List<Categories>> getListCategoryId(int id) async {
+    Database dbProducts = await db;
+
+    List<Map> maps = await dbProducts.query('categories', columns: ['_id', 'category'], where: '_id = $id');
+
+    return maps.map((i)=>Categories.fromMap(i)).toList();
+  }
+
    Future<List<Prices>> getListPrices() async {
     Database dbProducts = await db;
 
@@ -126,8 +134,6 @@ class DbHelper {
 
     List<Map> maps = await dbProducts.query('prices',
     columns: ['_id', 'provider', 'product', 'brand', 'presentation', 'price_unit', 'promocion'], where: '_id = $id',orderBy: 'provider ASC');
-
-    maps[0].toString();
     return maps.map((i)=>Prices.fromMap(i)).toList();
     //return maps.map((i) => Prices.)
   }

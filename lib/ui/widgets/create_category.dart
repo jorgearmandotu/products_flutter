@@ -66,7 +66,7 @@ class MyCategoryFormState extends State<CategoryForm> {
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   category.category = categoryName.text;
                   categoryExist != null ? categoryBloc.updateCategory(category) : categoryBloc.addCategoryToList(category);
-                  Navigator.pop(context);
+                  Navigator.pop<Categories>(context, category);
                 }
               },
               child: Text( categoryExist != null ? 'Actualizar' : 'Agregar'),

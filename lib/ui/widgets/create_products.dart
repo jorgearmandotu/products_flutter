@@ -1,11 +1,15 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import './myappbar.dart';
 import '../../models/models.dart';
-//import '../../bloc/ListDetailBloc.dart';
 import '../../bloc/category_bloc.dart';
-//import '../../bloc/product_bloc.dart';
 import '../../bloc/products_global_bloc.dart';
+import '../widgets/create_category.dart';
 
+int _idCategory;
+//String _nameCategory;
 class CreateProducts extends StatelessWidget {
   final Products productExist;
   CreateProducts({this.productExist});
@@ -45,6 +49,9 @@ class ProductsFormState extends State<ProductsForm> {
     if(productExist != null){
       productName.text = productExist.product;
       productUnit.text = productExist.unit;
+      _idCategory = productExist.category;
+    }else{
+      _idCategory = null;
     }
     var _sizeWidth = MediaQuery.of(context).size.width;
     return Form(
@@ -81,8 +88,10 @@ class ProductsFormState extends State<ProductsForm> {
               color: Colors.orange,
               shape: CircleBorder(),
               child: Icon(Icons.add, /*color: Colors.white,*/),
-              onPressed: (){
+              onPressed: () {//agregar async si se usa el await
+                //final result = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateCategory()));
                 Navigator.pushNamed(context, '/createCategory');
+                //print(result.category);
               },
               ),
           ],),
@@ -114,6 +123,8 @@ class ProductsFormState extends State<ProductsForm> {
             //bloc.addProductToList(productInsert);
             //productBloc.fetchAllProducts();
             productExist != null ? globalProductsBloc.updateProduct(productInsert) : globalProductsBloc.addProductToList(productInsert);
+            _idCategory = null;
+            //_nameCategory = null;
             Navigator.pop(context);
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -142,6 +153,7 @@ class _DropdownState extends State<DropDownCategories> {
   @override
   void initState() {
     categoryBloc.open();
+    getCategorie();
     super.initState();
   }
   
@@ -149,6 +161,30 @@ class _DropdownState extends State<DropDownCategories> {
   void dispose() {
     categoryBloc.dispose();
     super.dispose();
+  }
+
+  Future getCategorie() async{
+    if(_idCategory != null){
+      Observable<List<Categories>> subscription = categoryBloc.allCategories;
+      subscription.listen((result){
+        for(Categories c in result){
+          if(c.id == _idCategory){
+            dropdownValue = c;
+            break;
+          }
+        }
+      });
+    }/*else if(_nameCategory != null){
+      Observable<List<Categories>> subscription = categoryBloc.allCategories;
+      subscription.listen((result){
+        for(Categories c in result){
+          if(c.category == _nameCategory){
+            dropdownValue = c;
+            break;
+          }
+        }
+      });
+    }*/
   }
 
   Widget build(BuildContext context) {
@@ -166,12 +202,13 @@ class _DropdownState extends State<DropDownCategories> {
   }
   Widget getCategories(AsyncSnapshot<List<Categories>> snapshot){
     return DropdownButton<Categories>(
-      value: dropdownValue,
       hint: Text('Seleccione Categoria'),
       onChanged: (Categories newValue) {
         setState(() {
          dropdownValue = newValue;
          _category = newValue;
+         _idCategory = null;
+         //_nameCategory = null;
         });
       },
       items: snapshot.data.map<DropdownMenuItem<Categories>>((Categories value) {
@@ -180,6 +217,7 @@ class _DropdownState extends State<DropDownCategories> {
           child: Text(value.category),
           );
       }).toList(),
+      value: dropdownValue,
     );
   }
 }
