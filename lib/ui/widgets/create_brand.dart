@@ -4,27 +4,34 @@ import '../../models/models.dart';
 import '../../bloc/brand_bloc.dart';
 
 class CreateBrand extends StatelessWidget {
+  final Brands brandExist;
+  CreateBrand({this.brandExist});
+
   @override
   Widget build(BuildContext context) {
     
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Add Marca',
+        title: brandExist == null ? 'Add Marca' : 'Actualizar Marca',
         context: context,
       ),
-      body: BrandForm(),
+      body: BrandForm(brandExist),
     );
   }
 }
 
 class BrandForm extends StatefulWidget {
+  final Brands brandExist;
+  BrandForm(this.brandExist);
   @override
   MyBrandFormState createState() {
-    return MyBrandFormState();
+    return MyBrandFormState(brandExist);
   }
 }
 
 class MyBrandFormState extends State<BrandForm> {
+  Brands brandExist;
+  MyBrandFormState(this.brandExist);
   final _formKey = GlobalKey<FormState>();
   final brandName = TextEditingController();
 
@@ -44,6 +51,9 @@ class MyBrandFormState extends State<BrandForm> {
 
   @override
   Widget build(BuildContext context) {
+    if(brandExist != null) {
+      brandName.text = brandExist.brand;
+    }
     return Form(
       key: _formKey,
       child:ListView(
@@ -65,19 +75,17 @@ class MyBrandFormState extends State<BrandForm> {
             child: RaisedButton(
               color: Colors.orange,
               onPressed: (){
-                Brands brand = new Brands();
+                Brands brand;
+                brandExist != null ? brand = brandExist : brand = new Brands();
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   brand.brand = brandName.text;
-                  brandBloc.addBrandsToList(brand);
+                  brandExist != null ? brandBloc.updateBrand(brand) : brandBloc.addBrandsToList(brand);
                   Navigator.pop(context);
-                  /*_dataBase.insert(brand).then((value) {
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                  });*/
                 }
               },
-              child: Text('Agregar', style: TextStyle(/*color: Colors.white*/),),
+              child: brandExist == null ? Text('Agregar',) : Text('Actualizar'),
             ),
           ),
         ],

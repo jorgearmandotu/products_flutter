@@ -4,32 +4,41 @@ import '../../models/models.dart';
 import '../../bloc/category_bloc.dart';
 
 class CreateCategory extends StatelessWidget {
+  final Categories categoryExist;
+  CreateCategory({this.categoryExist});
+
   @override
   Widget build(BuildContext context) {
     
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Add Categoria',
+        title: categoryExist != null ? 'Actualizar Categoria' : 'Add Categoria',
         context: context,
       ),
-      body: CategoryForm(),
+      body: CategoryForm(categoryExist: categoryExist,),
     );
   }
 }
 
 class CategoryForm extends StatefulWidget {
+  final Categories categoryExist;
+  CategoryForm({this.categoryExist});
   @override
   MyCategoryFormState createState() {
-    return MyCategoryFormState();
+    return MyCategoryFormState(categoryExist: categoryExist);
   }
 }
 
 class MyCategoryFormState extends State<CategoryForm> {
   final _formKey = GlobalKey<FormState>();
   final categoryName = TextEditingController();
+  final Categories categoryExist;
+
+  MyCategoryFormState({this.categoryExist});
 
   @override
   Widget build(BuildContext context) {
+    if(categoryExist != null){ categoryName.text = categoryExist.category; }
     return Form(
       key: _formKey,
       child: ListView(
@@ -51,17 +60,16 @@ class MyCategoryFormState extends State<CategoryForm> {
             child: RaisedButton(
               color: Colors.orange,
               onPressed: (){
-                Categories category = new Categories();
+                Categories category = categoryExist!= null ? categoryExist : new Categories();
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
                   category.category = categoryName.text;
-                  //Navigator.popUntil(context, ModalRoute.withName('/'));
-                  categoryBloc.addCategoryToList(category);
+                  categoryExist != null ? categoryBloc.updateCategory(category) : categoryBloc.addCategoryToList(category);
                   Navigator.pop(context);
                 }
               },
-              child: Text('Agregar', style: TextStyle(/*color: Colors.white,*/)),
+              child: Text( categoryExist != null ? 'Actualizar' : 'Agregar'),
             ),
           ),
         ],

@@ -27,6 +27,12 @@ class DropdownBloc {
     });
   }
 
+  void updateProvider(Providers provider){
+    _dataDB.update(provider).then((result){
+      fetcAllProviders();
+    });
+  }
+
   void dispose(){
     _listProvider.close();
   }

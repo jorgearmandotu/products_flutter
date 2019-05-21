@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:products_flutter/ui/widgets/gestion_brand.dart';
+import 'package:products_flutter/ui/widgets/gestion_categories.dart';
 import 'package:products_flutter/ui/widgets/myappbar.dart';
 import './ui/widgets/create_brand.dart';
 import './ui/widgets/create_category.dart';
@@ -8,6 +10,7 @@ import './ui/widgets/create_products.dart';
 import './ui/widgets/create_prices.dart';
 import './ui/widgets/ProductDetail.dart';
 import './ui/widgets/menu_opciones.dart';
+import './ui/widgets/gestion_providers.dart';
 import './bloc/products_global_bloc.dart';
 
 void main() => runApp(ProductsApp());
@@ -28,9 +31,12 @@ class ProductsApp extends StatelessWidget {
         '/menu': (context) => MenuView(),
         '/createBrand': (context) => CreateBrand(),
         '/createCategory': (context) => CreateCategory(),
-        '/createProvider': (context) => Creates(),
+        '/createProvider': (context) => CreateProvider(),
         '/createProduct': (context) => CreateProducts(),
         '/createPrices': (context) => CreatePrices(),
+        '/gestionProvider': (context) => GestionProviders(),
+        '/gestionBrands' : (context) => GestionBrands(),
+        '/gestionCategories' : (context) => GestionCategories(),
       },
     );
   }
@@ -99,7 +105,6 @@ class ListProductsState extends State<ListProducts> {
 
    @override
     void dispose(){
-      //bloc.dispose();
       globalProductsBloc.dispose();
       super.dispose();
     }
@@ -111,7 +116,6 @@ class ListProductsState extends State<ListProducts> {
 
   Widget _getList() {
     return StreamBuilder(
-      //stream: bloc.allProducts,
       stream: globalProductsBloc.allProducts,
       builder: (context, AsyncSnapshot<List<Products>> snapshot){
         if(snapshot.hasData){
@@ -135,14 +139,28 @@ class ListProductsState extends State<ListProducts> {
               Navigator.push(context, new MaterialPageRoute(builder: (context) {
                 return ProductDetail(product);
               }));
-              globalProductsBloc.fetchAllProducts();
+              //globalProductsBloc.fetchAllProducts();
             },
-            child: ListTile(
-              leading: const Icon(Icons.shopping_cart, /*color: Colors.deepPurple*/),
-              title: Text(product.product, style: TextStyle(fontSize: 18)),
-              subtitle: Text(product.unit),
-            )
-          );
+            onLongPress: (){
+              
+            },
+            child:
+                ListTile(
+                  leading: const Icon(Icons.shopping_cart, /*color: Colors.deepPurple*/),
+                  title: Text(product.product, style: TextStyle(fontSize: 18)),
+                  subtitle: Row(
+                    children: <Widget>[
+                      Text(product.unit),
+                      IconButton(
+                  icon: Icon(Icons.mode_edit),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateProducts(productExist: product,)));
+                  },
+                )
+                    ],
+                  ) 
+                ),
+        );
       },
     );
   }

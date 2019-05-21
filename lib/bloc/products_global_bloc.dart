@@ -24,6 +24,12 @@ class ProductsGlobalBloc {
     });
   }
 
+  void updateProduct(Products product){
+    _dataDb.update(product).then((result){
+      fetchAllProducts();
+    });
+  }
+
   void dispose(){
     _listProducts?.close();
   }

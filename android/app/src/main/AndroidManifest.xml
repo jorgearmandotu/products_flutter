@@ -8,7 +8,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="products_flutter"
+        android:label="compara precios"
         android:icon="@mipmap/ic_cestamercado">
         <activity
             android:name=".MainActivity"

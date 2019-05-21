@@ -24,6 +24,9 @@ class MenuView extends StatelessWidget {
         listData(Icons.category, 'Agregar Categoria', '/createCategory', context),
         listData(Icons.loyalty, 'Agregar Marcas', '/createBrand', context),
         listData(Icons.store, 'Agregar Tiendas', '/createProvider', context),
+        listData(Icons.build, 'Gestion tiendas', '/gestionProvider', context),
+        listData(Icons.border_color, 'Gestion Marcas', '/gestionBrands', context),
+        listData(Icons.shopping_basket, 'Gestion Categorias', '/gestionCategories', context),
       ],
     );
   }

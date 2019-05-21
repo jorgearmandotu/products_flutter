@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
 import './myappbar.dart';
-import '../../bloc/dropdownBloc.dart';
+import '../../bloc/provider_bloc.dart';
 
-class Creates extends StatelessWidget {
+class CreateProvider extends StatelessWidget {
+  final Providers providerExist;
+  CreateProvider({this.providerExist});
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Add Proveedor',
+        title: 'Proveedores',
         context: context,
       ),
-      body: ProviderForm(),
+      body: ProviderForm(providerExist: providerExist,),
     );
   }
 }
 
 class ProviderForm extends StatefulWidget {
+  final Providers providerExist;
+  ProviderForm({this.providerExist});
   @override
   ProviderFormState createState() {
-    return ProviderFormState();
+    return ProviderFormState(providerExist: providerExist);
   }
 }
 
 class ProviderFormState extends State<ProviderForm> {
+  Providers providerExist;
+  ProviderFormState({this.providerExist});
+
   final _formKey = GlobalKey<FormState>();
   final providerName = TextEditingController();
   final providerAddress = TextEditingController();
@@ -32,6 +39,11 @@ class ProviderFormState extends State<ProviderForm> {
 
   @override
   Widget build(BuildContext context) {
+    if(providerExist != null){
+      providerName.text = providerExist.provider;
+      providerAddress.text = providerExist.address;
+      providerPhone.text = providerExist.phone;
+    }
     return Form(
       key: _formKey,
       child: ListView(
@@ -65,7 +77,8 @@ class ProviderFormState extends State<ProviderForm> {
             child: RaisedButton(
               color: Colors.orange,
               onPressed: (){
-                Providers provider = new Providers();
+                Providers provider;
+                providerExist != null ? provider = providerExist : provider = new Providers();
                 if(_formKey.currentState.validate()) {
                   Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text('procesando'),));
@@ -73,10 +86,10 @@ class ProviderFormState extends State<ProviderForm> {
                   provider.address = providerAddress.text;
                   provider.phone = providerPhone.text;
                   Navigator.pop(context);
-                  providerBloc.addProviderToList(provider);
+                  providerExist != null ? providerBloc.updateProvider(provider) : providerBloc.addProviderToList(provider);
                 }
               },
-              child: Text('Agregar', style: TextStyle(/*color: Colors.white*/)),
+              child: providerExist != null ? Text('Actualizar',) : Text('Agregar',),
             ),
           ),
         ],

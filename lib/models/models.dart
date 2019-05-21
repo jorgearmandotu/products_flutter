@@ -14,7 +14,7 @@ class Brands extends TableElement {
   Map<String, dynamic> toMap(){
     var map = <String, dynamic>{'brand': this.brand};
     if(this.id != null){
-      map['id'] = id;
+      map['_id'] = id;
     }
     return map;
   }

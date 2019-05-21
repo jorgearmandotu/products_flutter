@@ -22,6 +22,13 @@ class CategoryBloc {
     });
   }
 
+  updateCategory(Categories category){
+    _dataDb.update(category).then((result){
+      //fetchAllCategories();
+    });
+    fetchAllCategories();
+  }
+
   dispose(){
     _listCategories.close();
   }

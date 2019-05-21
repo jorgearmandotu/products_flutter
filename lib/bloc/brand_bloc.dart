@@ -25,6 +25,12 @@ class BrandBloc {
     });
   }
 
+  void updateBrand(Brands brand) {
+    _dataDB.update(brand).then((result){
+      fetcAllBrands();
+    });
+  }
+
   void dispose(){
     _listBrands.close();
   }

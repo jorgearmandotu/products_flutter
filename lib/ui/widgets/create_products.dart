@@ -7,23 +7,27 @@ import '../../bloc/category_bloc.dart';
 import '../../bloc/products_global_bloc.dart';
 
 class CreateProducts extends StatelessWidget {
+  final Products productExist;
+  CreateProducts({this.productExist});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        title: 'Add Productos',
+        title: productExist != null ? 'Add Productos' : 'Actualizar Productos',
         context: context,
         menu: false,
       ),
-      body: ProductsForm(),
+      body: ProductsForm(productExist: productExist,),
     );
   }
 }
 
 class ProductsForm extends StatefulWidget {
+  final Products productExist;
+  ProductsForm({this.productExist});
   @override
   ProductsFormState createState() {
-    return ProductsFormState();
+    return ProductsFormState(productExist: productExist);
   }
 }
 
@@ -33,9 +37,15 @@ class ProductsFormState extends State<ProductsForm> {
   final _formKey = GlobalKey<FormState>();
   final productName = TextEditingController();
   final productUnit = TextEditingController();
-  
+
+  Products productExist;
+  ProductsFormState({this.productExist});
   @override
   Widget build(BuildContext context) {
+    if(productExist != null){
+      productName.text = productExist.product;
+      productUnit.text = productExist.unit;
+    }
     var _sizeWidth = MediaQuery.of(context).size.width;
     return Form(
       key: _formKey,
@@ -95,14 +105,15 @@ class ProductsFormState extends State<ProductsForm> {
             Scaffold.of(context).showSnackBar(SnackBar(
               content: Text('procesando'),
             ));
-            Products productInsert = new Products();
+            Products productInsert;
+            productExist != null ? productInsert = productExist : productInsert = new Products();
             productInsert.product = productName.text;
             productInsert.unit = productUnit.text;
             productInsert.category = _category.id;
             _category = null;
             //bloc.addProductToList(productInsert);
             //productBloc.fetchAllProducts();
-            globalProductsBloc.addProductToList(productInsert);
+            productExist != null ? globalProductsBloc.updateProduct(productInsert) : globalProductsBloc.addProductToList(productInsert);
             Navigator.pop(context);
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -111,7 +122,7 @@ class ProductsFormState extends State<ProductsForm> {
           }
         }
       },
-      child: Text('Agregar', style: TextStyle(/*color: Colors.white*/),),
+      child: productExist != null ? Text('Actualizar') : Text('Agregar'),
     );
   }
 }

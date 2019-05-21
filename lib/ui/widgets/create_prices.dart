@@ -4,7 +4,7 @@ import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/models.dart';
 import '../../bloc/listProductDetailBloc.dart';
-import '../../bloc/dropdownBloc.dart';
+import '../../bloc/provider_bloc.dart';
 import '../../helpers/fancy_fab.dart';
 //import '../../bloc/product_bloc.dart';
 import '../../bloc/brand_bloc.dart';
