@@ -139,7 +139,7 @@ class ListProductsState extends State<ListProducts> {
               Navigator.push(context, new MaterialPageRoute(builder: (context) {
                 return ProductDetail(product);
               }));
-              //globalProductsBloc.fetchAllProducts();
+              globalProductsBloc.fetchAllProducts();
             },
             onLongPress: (){
               

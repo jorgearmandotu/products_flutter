@@ -6,7 +6,6 @@ import './myappbar.dart';
 import '../../models/models.dart';
 import '../../bloc/category_bloc.dart';
 import '../../bloc/products_global_bloc.dart';
-import '../widgets/create_category.dart';
 
 int _idCategory;
 //String _nameCategory;
@@ -87,7 +86,7 @@ class ProductsFormState extends State<ProductsForm> {
             RaisedButton(
               color: Colors.orange,
               shape: CircleBorder(),
-              child: Icon(Icons.add, /*color: Colors.white,*/),
+              child: Icon(Icons.add,),
               onPressed: () {//agregar async si se usa el await
                 //final result = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateCategory()));
                 Navigator.pushNamed(context, '/createCategory');
