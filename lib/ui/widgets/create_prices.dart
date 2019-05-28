@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rxdart/rxdart.dart';
 import './myappbar.dart';
 import '../../data/data_helper.dart';
 import '../../models/models.dart';
 import '../../bloc/listProductDetailBloc.dart';
 import '../../bloc/provider_bloc.dart';
 import '../../helpers/fancy_fab.dart';
-//import '../../bloc/product_bloc.dart';
 import '../../bloc/brand_bloc.dart';
 import '../../bloc/products_global_bloc.dart';
 
 var _sizeWidth;
 class CreatePrices extends StatelessWidget {
   final int idPrice;
-  final Products prod;
+  final Products prod;//si llega valor es cuando hay producto sin precios agregados se debe seleccionar combobox
   CreatePrices({this.idPrice, this.prod});
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class CreatePrices extends StatelessWidget {
           context: context,
           menu: true,
         ),
-        body: ProductsForm(),
+        body: ProductsForm(productExist: prod,),
         floatingActionButton: FancyFab(),
       )
       : Scaffold(
@@ -33,9 +33,7 @@ class CreatePrices extends StatelessWidget {
           title: 'editar Precios',
           context: context,
         ),
-        body: EditPrices(
-          idPrice: idPrice,
-        ),
+        body: EditPrices(idPrice: idPrice,),
       );
   }
 }
@@ -46,15 +44,17 @@ Brands _brand;
 Providers _provider;
 
 class ProductsForm extends StatefulWidget {
-  ProductsForm();
+  final Products productExist;
+  ProductsForm({this.productExist});
   @override
   ProductsFormState createState() {
-    return ProductsFormState();
+    return ProductsFormState(productExist: productExist);
   }
 }
 
 class ProductsFormState extends State<ProductsForm> {
-  ProductsFormState();
+  final Products productExist;
+  ProductsFormState({this.productExist});
   final _formKey = GlobalKey<FormState>();
   final TextEditingController productVlrUnit = TextEditingController();
   final TextEditingController productPromocion = TextEditingController();
@@ -68,7 +68,7 @@ class ProductsFormState extends State<ProductsForm> {
       child: ListView(
         padding: EdgeInsets.symmetric(horizontal: _sizeWidth * 0.1),
         children: <Widget>[
-          DropDownProducts(),
+          DropDownProducts(productExist: productExist,),
           DropDownProviders(),
           DropDownBrands(),
           DropDownPresentations(),
@@ -152,21 +152,38 @@ class ProductsFormState extends State<ProductsForm> {
 }
 
 class DropDownProducts extends StatefulWidget {
-  DropDownProducts({Key key}) : super(key: key);
+  final Products productExist;
+  DropDownProducts({Key key, this.productExist}) : super(key: key);
 
   @override
-  _DropDownProductsState createState() => _DropDownProductsState();
+  _DropDownProductsState createState() => _DropDownProductsState(productExist: productExist);
 }
 
 class _DropDownProductsState extends State<DropDownProducts> {
-
+  final Products productExist;
+  _DropDownProductsState({this.productExist});
   Products dropdownProductsValue;
 
   @override
   void initState() {
     //productBloc.open();
     globalProductsBloc.fetchAllProducts();
+    if(productExist!= null){
+      loadProduct(productExist);
+    }
     super.initState();
+  }
+
+  void loadProduct(Products product){
+    Observable<List<Products>> _subscripption = globalProductsBloc.allProducts;
+    _subscripption.listen((result){
+      for(Products p in result){
+        if(p.id == product.id){
+          dropdownProductsValue = p;
+          break;
+        }
+      }
+    });
   }
 
   @override
@@ -212,13 +229,16 @@ class _DropDownProductsState extends State<DropDownProducts> {
 }
 
 class DropDownPresentations extends StatefulWidget {
-  DropDownPresentations({Key key}) : super(key: key);
+  final int idPresentation;
+  DropDownPresentations({Key key, this.idPresentation}) : super(key: key);
 
   @override
-  _DropDownPresentationsState createState() => _DropDownPresentationsState();
+  _DropDownPresentationsState createState() => _DropDownPresentationsState(idPresentation: idPresentation);
 }
 
 class _DropDownPresentationsState extends State<DropDownPresentations> {
+  int idPresentation;
+  _DropDownPresentationsState({this.idPresentation});
   List<Presentations> listPresentations;
   DbHelper _dataBase;
   Presentations dropdownValue;
@@ -226,7 +246,7 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
   @override
   void initState() {
     super.initState();
-    loadList();
+    loadList(idPresentation: idPresentation);
   }
 
   void updateList({Presentations presentation}) {
@@ -243,12 +263,19 @@ class _DropDownPresentationsState extends State<DropDownPresentations> {
     });
   }
 
-  void loadList(){
+  void loadList({int idPresentation}){
     _dataBase = new DbHelper();
     _dataBase.getListPresentations().then((list) {
       setState(() {
         if (list != null) {
           listPresentations = list;
+          if(idPresentation != null){
+            for(Presentations p in listPresentations){
+              if(p.id == idPresentation){
+                dropdownValue = p;
+              }
+          }
+          }
         }
       });
     });
@@ -516,7 +543,8 @@ class _EditPricesState extends State<EditPrices> {
         child: Column(
           children: <Widget>[
             Text(
-                'Producto: ${_product.product} \n marca: ${_product.brand} \n Proveedor: ${_product.provider} \nPresentación: ${_product.presentation}'),
+                'Producto: ${_product.product} \n marca: ${_product.brand} \n Proveedor: ${_product.provider}'),
+            DropDownPresentations(idPresentation: _price.presentation,),
             TextFormField(
               //initialValue: _price.priceUnit.toString(),
               keyboardType: TextInputType.number,
@@ -560,6 +588,7 @@ class _EditPricesState extends State<EditPrices> {
                   priceUpdate = _price;
                   priceUpdate.priceUnit = unit;
                   priceUpdate.promocion = ofert;
+                  priceUpdate.presentation = _presentation.id;
                   blocDetailProduct.updateProductsDetail(priceUpdate);
                   Navigator.of(context).pop();
                   return Center(child: CircularProgressIndicator(),);
