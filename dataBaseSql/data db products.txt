@@ -1,0 +1,33 @@
+CREATE TABLE  products (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         product TEXT NOT NULL,
+         unit TEXT NOT NULL,
+         category INTEGER NOT NULL
+         );
+         CREATE TABLE brands (
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+           brand TEXT NOT NULL
+           );
+         CREATE TABLE categories (
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+           category TEXT NOT NULL
+           );
+         CREATE TABLE presentations (
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+           presentation TEXT NOT NULL
+           );
+         CREATE TABLE prices (
+           product INTEGER NOT NULL,
+           brand INTEGER NOT NULL,
+           presentation INTEGER DEFAULT NULL,
+           provider INTEGER NOT NULL,
+           price_unit REAL NOT NULL,
+           promocion REAL DEFAULT '0',
+           id INTEGER PRIMARY KEY AUTOINCREMENT
+           );
+           CREATE TABLE providers (
+             id INTEGER PRIMARY KEY AUTOINCREMENT,
+             provider TEXT NOT NULL,
+             address TEXT NOT NULL,
+             phone TEXT NOT NULL
+            ); 
